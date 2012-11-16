@@ -1,4 +1,4 @@
-## Develompent workflow
+## Development workflow
 
 [Prerequisites](https://groups.google.com/d/msg/google-chrome-developer-tools/L1nemsmtnJI/ndP4cYkTy-sJ)
 
@@ -7,6 +7,6 @@
 ~/Code/WebKit/Source/WebCore/inspector ➤ ln -s ~/Code/devtools-codeschool-ext/chrome/codeschool.js
 ```
 
-Add `<script src="codescool.js"></script>` to WebKit/Source/WebCore/inspector/inspector.html
+Add `<script src="codeschool.js"></script>` to WebKit/Source/WebCore/inspector/inspector.html
 
 Now you can develop CodeSchool extension the same as you would develop the DevTools.
