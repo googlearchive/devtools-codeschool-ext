@@ -113,8 +113,11 @@ onScriptLoad('WebInspector.UISourceCode', function() {
 onScriptLoad('WebInspector.ProfilerDispatcher', function() {
     var originalMethod = WebInspector.ProfilerDispatcher.prototype.addProfileHeader;
 
-    WebInspector.UISourceCode.prototype.addProfileHeader = function(callback) {
+    WebInspector.ProfilerDispatcher.prototype.addProfileHeader = function(profile) {
         originalMethod.apply(this, arguments);
-        emitAction('cpuProfile', {url: this.url});
+
+        if (profile.typeId === 'CPU') {
+            emitAction('cpuProfile');
+        }
     }
 });
