@@ -116,8 +116,13 @@ onScriptLoad('WebInspector.ProfilerDispatcher', function() {
     WebInspector.ProfilerDispatcher.prototype.addProfileHeader = function(profile) {
         originalMethod.apply(this, arguments);
 
-        if (profile.typeId === 'CPU') {
-            emitAction('cpuProfile');
+        switch (profile.typeId) {
+            case 'CPU':
+                emitAction('cpuProfile');
+                break;
+            case 'HEAP':
+                emitAction('heapSnapshot');
+                break;
         }
     }
 });
