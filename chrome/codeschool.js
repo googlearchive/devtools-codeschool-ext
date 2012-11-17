@@ -6,12 +6,13 @@ function emitAction(name, data) {
     console.log({
         action: name,
         date: Date.now(),
-        data: data
+        data: data || null
     })
 }
 
 var modulesToFiles = {
     'WebInspector.UISourceCode': 'UISourceCode.js',
+    'WebInspector.ProfilerDispatcher': 'ProfilesPanel.js',
     'WebInspector.ElementsPanel': 'ElementsPanel.js'
 };
 
@@ -105,5 +106,15 @@ onScriptLoad('WebInspector.UISourceCode', function() {
     WebInspector.UISourceCode.prototype.commitWorkingCopy = function(callback) {
         originalMethod.apply(this, arguments);
         emitAction('fileSaved', {url: this.url});
+    }
+});
+
+
+onScriptLoad('WebInspector.ProfilerDispatcher', function() {
+    var originalMethod = WebInspector.ProfilerDispatcher.prototype.addProfileHeader;
+
+    WebInspector.UISourceCode.prototype.addProfileHeader = function(callback) {
+        originalMethod.apply(this, arguments);
+        emitAction('cpuProfile', {url: this.url});
     }
 });
