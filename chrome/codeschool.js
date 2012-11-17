@@ -1,6 +1,6 @@
 /**
  * @param {string} name
- * @param {Object} data
+ * @param {Object=} data
  */
 function emitAction(name, data) {
     console.log({
@@ -13,6 +13,7 @@ function emitAction(name, data) {
 var modulesToFiles = {
     'WebInspector.UISourceCode': 'UISourceCode.js',
     'WebInspector.ProfilerDispatcher': 'ProfilesPanel.js',
+    'WebInspector.TimelineModel': 'TimelineModel.js',
     'WebInspector.ElementsPanel': 'ElementsPanel.js'
 };
 
@@ -124,5 +125,16 @@ onScriptLoad('WebInspector.ProfilerDispatcher', function() {
                 emitAction('heapSnapshot');
                 break;
         }
+    }
+});
+
+
+onScriptLoad('WebInspector.TimelineModel', function() {
+    var originalMethod = WebInspector.TimelineModel.prototype.startRecord;
+
+    WebInspector.TimelineModel.prototype.startRecord = function() {
+        originalMethod.apply(this, arguments);
+
+        emitAction('timelineSnapshot');
     }
 });
