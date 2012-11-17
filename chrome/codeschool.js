@@ -9,7 +9,47 @@ function emitAction(name, data) {
 var modulesToFiles = {
     'WebInspector.ElementsPanel': 'ElementsPanel.js'
 };
+
 var _callbacks = {};
+
+(function monkeypatchImportScript() {
+    var originalImportScript = window.importScript;
+
+    /**
+     * @param {string} scriptName
+     */
+    window.importScript = function(scriptName) {
+        if (_importedScripts[scriptName]) {
+            return;
+        }
+
+        originalImportScript.apply(this, arguments);
+
+        if (_callbacks[scriptName]) {
+            _callbacks[scriptName].forEach(function(callback) {
+                callback();
+            })
+        }
+    }
+})();
+
+
+function onScriptLoad(path, callback) {
+    if (isDefined(path)) {
+        callback();
+    } else {
+        var scriptName = modulesToFiles[path];
+        if (_importedScripts[scriptName]) {
+            callback();
+        } else {
+            if (!_callbacks[scriptName]) {
+                _callbacks[scriptName] = [];
+            }
+
+            _callbacks[scriptName].push(callback);
+        }
+    }
+}
 
 
 /**
@@ -21,43 +61,13 @@ function isDefined(path) {
     var keys = path.split('.');
     var key = '';
     while (key = keys.shift()) {
-        if (obj.hasOwnProperty(key))
+        if (obj.hasOwnProperty(key)) {
             obj = obj[key];
-        else
+        } else {
             return false;
-    }
-    return true;
-}
-
-function onScriptLoad(path, callback) {
-    if (isDefined(path))
-        callback();
-    else {
-        var scriptName = modulesToFiles['WebInspector.ElementsPanel'];
-        if (_importedScripts[scriptName])
-            callback();
-        else {
-            if (!_callbacks[scriptName])
-                _callbacks[scriptName] = [];
-
-            _callbacks[scriptName].push(callback);
         }
     }
-}
-
-
-/**
- * @param {string} scriptName
- */
-function importScript(scriptName)
-{
-    if (_importedScripts[scriptName])
-        return;
-
-    if (_callbacks[scriptName])
-        _callbacks[scriptName].forEach(function(callback) {
-            callback();
-        })
+    return true;
 }
 
 
