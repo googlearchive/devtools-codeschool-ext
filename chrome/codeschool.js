@@ -1,3 +1,7 @@
+/**
+ * @param {string} name
+ * @param {Object} data
+ */
 function emitAction(name, data) {
     console.log({
         action: name,
@@ -7,6 +11,7 @@ function emitAction(name, data) {
 }
 
 var modulesToFiles = {
+    'WebInspector.UISourceCode': 'UISourceCode.js',
     'WebInspector.ElementsPanel': 'ElementsPanel.js'
 };
 
@@ -91,5 +96,14 @@ onScriptLoad('WebInspector.ElementsPanel', function() {
             id: id,
             state: pseudoClass
         });
+    }
+});
+
+onScriptLoad('WebInspector.UISourceCode', function() {
+    var originalMethod = WebInspector.UISourceCode.prototype.commitWorkingCopy;
+
+    WebInspector.UISourceCode.prototype.commitWorkingCopy = function(callback) {
+        originalMethod.apply(this, arguments);
+        emitAction('fileSaved', {url: this.url});
     }
 });
