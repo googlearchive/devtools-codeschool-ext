@@ -14,6 +14,7 @@ var modulesToFiles = {
     'WebInspector.UISourceCode': 'UISourceCode.js',
     'WebInspector.ProfilerDispatcher': 'ProfilesPanel.js',
     'WebInspector.TimelineModel': 'TimelineModel.js',
+    'WebInspector.HeapSnapshotView': 'HeapSnapshotView.js',
     'WebInspector.ElementsPanel': 'ElementsPanel.js'
 };
 
@@ -136,5 +137,24 @@ onScriptLoad('WebInspector.TimelineModel', function() {
         originalMethod.apply(this, arguments);
 
         emitAction('timelineSnapshot');
+    }
+});
+
+
+onScriptLoad('WebInspector.HeapSnapshotView', function() {
+    var originalMethod = WebInspector.HeapSnapshotView.prototype._changeFilter;
+
+    WebInspector.HeapSnapshotView.prototype._changeFilter = function() {
+        originalMethod.apply(this, arguments);
+
+        var select = this.filterSelectElement;
+        var index = select.selectedIndex;
+        if (index > 1) {
+            // "Objects allocated between A and B" items come after the 2nd one.
+            // Doing someting like label.indexOf("Objects allocated between") is a bad idea since UI messages could be not in English.
+            emitAction('heapSnapshotBetween', {
+                label: select[index].label
+            });
+        }
     }
 });
