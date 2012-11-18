@@ -11,6 +11,7 @@ function emitAction(name, data) {
 }
 
 var modulesToFiles = {
+    'WebInspector.ScriptsPanel': 'ScriptsPanel.js',
     'WebInspector.UISourceCode': 'UISourceCode.js',
     'WebInspector.ProfilerDispatcher': 'ProfilesPanel.js',
     'WebInspector.TimelineModel': 'TimelineModel.js',
@@ -156,5 +157,19 @@ onScriptLoad('WebInspector.HeapSnapshotView', function() {
                 label: select[index].label
             });
         }
+    }
+});
+
+
+onScriptLoad('WebInspector.ScriptsPanel', function() {
+    var originalMethod = WebInspector.ScriptsPanel.prototype._toggleFormatSource;
+
+    WebInspector.ScriptsPanel.prototype._toggleFormatSource = function() {
+        originalMethod.apply(this, arguments);
+
+        emitAction('prettyPrint', {
+            enabled: this._toggleFormatSourceButton.toggled,
+            url: this._editorContainer.currentFile().url
+        });
     }
 });
