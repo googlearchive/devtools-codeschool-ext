@@ -124,6 +124,34 @@ runAfter('WebInspector.DataGrid.prototype._clickInHeaderCell', ['DataGrid.js'], 
 });
 
 
+runAfter('WebInspector.DataGrid.prototype._clickInDataTable', ['DataGrid.js'], function() {
+    if (!(this._parentView instanceof WebInspector.NetworkLogView)) {
+        return;
+    }
+
+    var gridNode = this.dataGridNodeFromNode(event.target);
+    if (!gridNode)
+        return;
+
+    if (!(gridNode._nameCell && typeof gridNode._nameCell.textContent === 'string')) {
+        throw new Error('WebInspector.NetworkDataGridNode#_nameCell.textContent is not a string');
+    }
+
+    //FIXME: doesn't look reliable
+    var wholeText = gridNode._nameCell.textContent;
+    var subtitleLength = gridNode._nameCell.querySelector('.network-cell-subtitle').textContent.length;
+    var fileName = wholeText.slice(0, -subtitleLength);
+
+    if (!fileName) {
+        throw new Error('gridNode._nameCell.textContent is falsy');
+    }
+
+    emitAction('networkRowClick', {
+        fileName: fileName
+    })
+});
+
+
 /**
  * @param {string} methodPath
  * @param {Array.<string>} dependentFiles
