@@ -94,11 +94,13 @@ runAfter('WebInspector.ScriptsPanel.prototype._toggleFormatSource', ['ScriptsPan
 });
 
 
-runAfter('WebInspector.ScriptsPanel.prototype._toggleFormatSource', ['ScriptsPanel.js'], function() {
-    emitAction('prettyPrint', {
-        enabled: this._toggleFormatSourceButton.toggled,
-        url: this._editorContainer.currentFile().url
-    });
+runAfter('WebInspector.ScriptsPanel.prototype._togglePauseOnExceptions', ['ScriptsPanel.js'], function() {
+    if (typeof this._pauseOnExceptionButton.state !== 'string') {
+        throw new Error('WebInspector.ScriptsPanel#_pauseOnExceptionButton.state must be a string');
+    }
+    emitAction('pauseOnException', {
+        state: this._pauseOnExceptionButton.state
+    })
 });
 
 
