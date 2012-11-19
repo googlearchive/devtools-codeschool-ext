@@ -152,6 +152,13 @@ runAfter('WebInspector.DataGrid.prototype._clickInDataTable', ['DataGrid.js'], f
 });
 
 
+runAfter('WebInspector.TabbedPane.prototype.selectTab', ['TabbedPane.js'], function(id, userGesture) {
+    emitAction('selectTab', {
+        id: id
+    });
+});
+
+
 /**
  * @param {string} methodPath
  * @param {Array.<string>} dependentFiles
