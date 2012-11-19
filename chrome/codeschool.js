@@ -1,3 +1,5 @@
+var RUN_TESTS = false;
+
 /**
  * @param {string} name
  * @param {Object=} data
@@ -196,6 +198,9 @@ function runAfter(methodPath, dependentFiles, hook) {
                     _callbacks[fileName] = [];
                 }
                 _callbacks[fileName].push(callback);
+                if (window.RUN_TESTS) {
+                    importScript(fileName);
+                }
             }
         }
 

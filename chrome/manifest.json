@@ -1,14 +1,16 @@
 {
   "name": "CodeSchool",
-  "key": "MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQDLoq7goGePRgHGJUh062AivkyY02+zjyK7MfZsqgu2UfU5+BZm2xL+AbSGhyLaRUhkvoDcInJ5ZgovWbb3hj1Ck9ag5Cjhiy7bOngWYGsDclaCNJlkYCv/9rqexUdZ4+O698PEwaErIUmbIs9AQbFyNzqSHFIh1V8Y5F/HGMd9qwIDAQAB",
+  "key": "MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQDEGBi/oD7Yl/Y16w3+gee/95/EUpRZ2U6c+8orV5ei+3CRsBsoXI/DPGBauZ3rWQ47aQnfoG00sXigFdJA2NhNK9OgmRA2evnsRRbjYm2BG1twpaLsgQPPus3PyczbDCvhFu8k24wzFyEtxLrfxAGBseBPb9QrCz7B4k2QgxD/CwIDAQAB",
 
   "version": "0.0.1",
   "manifest_version": 2,
 
   "content_scripts": [
-	  {
-		  "matches": ["<all_urls>"],
-		  "js": ["codeschool.js"]
-	  }
-  ]
+    {
+      "matches": ["<all_urls>"],
+      "js": ["index.js"]
+    }
+  ],
+
+  "web_accessible_resources": ["codeschool.js"]
 }
