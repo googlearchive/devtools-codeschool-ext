@@ -133,28 +133,31 @@ runAfter('WebInspector.DataGrid.prototype._clickInDataTable', ['DataGrid.js'], f
     if (!gridNode)
         return;
 
-    if (!(gridNode._nameCell && typeof gridNode._nameCell.textContent === 'string')) {
-        throw new Error('WebInspector.NetworkDataGridNode#_nameCell.textContent is not a string');
+    if (!(gridNode._nameCell && gridNode._request && typeof gridNode._request.name === 'function')) {
+        throw new Error('gridNode._request.name is not a function');
     }
 
-    //FIXME: doesn't look reliable
-    var wholeText = gridNode._nameCell.textContent;
-    var subtitleLength = gridNode._nameCell.querySelector('.network-cell-subtitle').textContent.length;
-    var fileName = wholeText.slice(0, -subtitleLength);
-
-    if (!fileName) {
-        throw new Error('gridNode._nameCell.textContent is falsy');
+    if (!gridNode._request) {
+        throw new Error('gridNode._request is falsy');
     }
 
     emitAction('networkRowClick', {
-        fileName: fileName
+        file: gridNode._request.name()
     })
 });
 
 
 runAfter('WebInspector.TabbedPane.prototype.selectTab', ['TabbedPane.js'], function(id, userGesture) {
-    emitAction('selectTab', {
-        id: id
+    if (!userGesture)
+        return;
+
+    if (!(this._request && typeof this._request.name === 'function')) {
+        throw new Error('WebInspector.TabbedPaneTab#_tabbedPane._request.name is not a function');
+    }
+
+    emitAction('networkFileSelect', {
+        tab: id,
+        file: this._request.name()
     });
 });
 
