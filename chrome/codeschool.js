@@ -110,7 +110,7 @@ runAfter('WebInspector.DataGrid.prototype._clickInHeaderCell', ['DataGrid.js'], 
     }
 
     var cell = event.target.enclosingNodeOrSelfWithNodeName('th');
-    if (!cell || cell.columnIdentifier !== 'size') {
+    if (!cell) {
         return;
     }
 
@@ -118,8 +118,9 @@ runAfter('WebInspector.DataGrid.prototype._clickInHeaderCell', ['DataGrid.js'], 
         throw new Error('WebInspector.DataGrid#sortOrder is not a string');
     }
 
-    emitAction('networkSortBySize', {
-        sortOrder: this.sortOrder
+    emitAction('networkSort', {
+        sortOrder: this.sortOrder,
+        column: cell.columnIdentifier
     })
 });
 
