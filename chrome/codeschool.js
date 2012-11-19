@@ -104,6 +104,26 @@ runAfter('WebInspector.ScriptsPanel.prototype._togglePauseOnExceptions', ['Scrip
 });
 
 
+runAfter('WebInspector.DataGrid.prototype._clickInHeaderCell', ['DataGrid.js'], function() {
+    if (!(this._parentView instanceof WebInspector.NetworkLogView)) {
+        return;
+    }
+
+    var cell = event.target.enclosingNodeOrSelfWithNodeName('th');
+    if (!cell || cell.columnIdentifier !== 'size') {
+        return;
+    }
+
+    if (typeof this.sortOrder !== 'string') {
+        throw new Error('WebInspector.DataGrid#sortOrder is not a string');
+    }
+
+    emitAction('networkSortBySize', {
+        sortOrder: this.sortOrder
+    })
+});
+
+
 /**
  * @param {string} methodPath
  * @param {Array.<string>} dependentFiles
