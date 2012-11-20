@@ -1,4 +1,5 @@
 var RUN_TESTS = false;
+var _testPaths = {};
 
 /**
  * @param {string} name
@@ -242,16 +243,29 @@ function runAfter(methodPath, dependentFiles, hook) {
                     _callbacks[fileName] = [];
                 }
                 _callbacks[fileName].push(callback);
-                if (window.RUN_TESTS) {
-                    importScript(fileName);
-                }
             }
         }
+
+        _testPaths[methodPath] = dependentFiles;
 
         if (loadedFilesCount === dependentFiles.length) {
             throw new Error(JSON.stringify(methodPath) + ' is not present in ' + JSON.stringify(dependentFiles));
         }
     }
+}
+
+
+function testMethodPaths() {
+    Object.keys(_testPaths).forEach(function(key) {
+        var dependentFiles = _testPaths[key];
+        dependentFiles.forEach(function(fileName) {
+            importScript(fileName);
+        });
+
+        if (!isPathDefined(key)) {
+            throw new Error(JSON.stringify(key) + ' is not present in ' + JSON.stringify(dependentFiles));
+        }
+    });
 }
 
 
