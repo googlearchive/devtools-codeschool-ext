@@ -175,10 +175,10 @@ runAfter('WebInspector.DataGrid.prototype._clickInDataTable', ['DataGrid.js'], f
 
 
 runAfter('WebInspector.TabbedPane.prototype.selectTab', ['TabbedPane.js'], function(id, userGesture) {
-    if (!userGesture)
+    if (!userGesture || !this._request)
         return;
 
-    if (!(this._request && typeof this._request.name === 'function')) {
+    if (typeof this._request.name !== 'function') {
         throw new Error('WebInspector.TabbedPaneTab#_tabbedPane._request.name is not a function');
     }
 
