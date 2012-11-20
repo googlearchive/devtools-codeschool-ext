@@ -7,7 +7,7 @@ var _testPaths = {};
  */
 function emitAction(name, data) {
     // CodeSchool guys, feel free to change console.debug with your function name or window.postMessage
-    var code = 'console.debug(' + JSON.stringify({
+    var code = 'window.devToolsCallback(' + JSON.stringify({
         action: name,
         date: Date.now(),
         data: data || null
