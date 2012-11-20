@@ -13,7 +13,6 @@ function emitAction(name, data) {
     }) + ')';
 
     runtimeEval(code);
-    //FIXME: runtimeEval doesn't show any errors when the code is invalid JS :(
 }
 
 /**
@@ -21,17 +20,20 @@ function emitAction(name, data) {
  * @param {string} expression
  */
 function runtimeEval(expression) {
-    WebInspector.runtimeModel.evaluate(
+    // https://developers.google.com/chrome-developer-tools/docs/protocol/1.0/runtime#command-evaluate
+    RuntimeAgent.evaluate(
         expression,
-        /* objectGroup */ 'console',
-        /* includeCommandLineAPI */ false,
-        /* doNotPauseOnExceptionsAndMuteConsole */ true,
-        /* returnByValue */ false,
-        /* generatePreview */ false,
-        /* callback */ function() {
-            console.log('Evaled');
-        }
-    );
+        /*objectGroup*/ '',
+        /*includeCommandLineAPI*/ false,
+        /*doNotPauseOnExceptionsAndMuteConsole*/ false,
+        undefined,
+        /*returnByValue*/ false,
+        /*generatePreview*/ false,
+        function evalCallback(result, meta, wasThrown) {
+            if (wasThrown) {
+                console.warn(result);
+            }
+        });
 }
 
 
