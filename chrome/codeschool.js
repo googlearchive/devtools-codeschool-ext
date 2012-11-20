@@ -189,6 +189,26 @@ runAfter('WebInspector.TabbedPane.prototype.selectTab', ['TabbedPane.js'], funct
 });
 
 
+runAfter('WebInspector.BreakpointManager.prototype.setBreakpoint', ['BreakpointManager.js'], function(uiSourceCode, lineNumber, condition, enabled) {
+    if (!enabled) {
+        return;
+    }
+
+    if (typeof lineNumber !== 'number') {
+        throw new Error('lineNumber is not a number');
+    }
+
+    if (!uiSourceCode || typeof uiSourceCode.url !== 'string') {
+        throw new Error('uiSourceCode.url is not a string');
+    }
+
+    emitAction('setBreakpoint', {
+        url: uiSourceCode.url,
+        line: lineNumber + 1
+    });
+});
+
+
 /**
  * @param {string} methodPath
  * @param {Array.<string>} dependentFiles
