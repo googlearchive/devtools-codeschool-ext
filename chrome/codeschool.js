@@ -5,11 +5,33 @@ var RUN_TESTS = false;
  * @param {Object=} data
  */
 function emitAction(name, data) {
-    console.log({
+    // CodeSchool guys, feel free to change console.debug with your function name or window.postMessage
+    var code = 'console.debug(' + JSON.stringify({
         action: name,
         date: Date.now(),
         data: data || null
-    })
+    }) + ')';
+
+    runtimeEval(code);
+    //FIXME: runtimeEval doesn't show any errors when the code is invalid JS :(
+}
+
+/**
+ * eval in web page context, e.g. CodeSchool page
+ * @param {string} expression
+ */
+function runtimeEval(expression) {
+    WebInspector.runtimeModel.evaluate(
+        expression,
+        /* objectGroup */ 'console',
+        /* includeCommandLineAPI */ false,
+        /* doNotPauseOnExceptionsAndMuteConsole */ true,
+        /* returnByValue */ false,
+        /* generatePreview */ false,
+        /* callback */ function() {
+            console.log('Evaled');
+        }
+    );
 }
 
 
@@ -238,3 +260,5 @@ function resolvePath(path) {
 function isPathDefined(path) {
     return !!resolvePath(path);
 }
+
+//@ sourceURL=codeschool.js
