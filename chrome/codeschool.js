@@ -209,6 +209,10 @@ runAfter('WebInspector.BreakpointManager.prototype.setBreakpoint', ['BreakpointM
 
 
 runAfter('WebInspector.UISourceCode.prototype.revertAndClearHistory', ['UISourceCode.js'], function(callback) {
+    if (typeof this.url !== 'string') {
+        throw new Error('WebInspector.UISourceCode#url is not a string');
+    }
+
     emitAction('revertRevision', {
         url: this.url
     })
@@ -216,6 +220,10 @@ runAfter('WebInspector.UISourceCode.prototype.revertAndClearHistory', ['UISource
 
 
 runAfter('WebInspector.UISourceCode.prototype.revertToOriginal', ['UISourceCode.js'], function(callback) {
+    if (typeof this.url !== 'string') {
+        throw new Error('WebInspector.UISourceCode#url is not a string');
+    }
+
     emitAction('applyOriginalContent', {
         url: this.url
     })
