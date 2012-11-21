@@ -208,6 +208,20 @@ runAfter('WebInspector.BreakpointManager.prototype.setBreakpoint', ['BreakpointM
 });
 
 
+runAfter('WebInspector.UISourceCode.prototype.revertAndClearHistory', ['UISourceCode.js'], function(callback) {
+    emitAction('revertRevision', {
+        url: this.url
+    })
+});
+
+
+runAfter('WebInspector.UISourceCode.prototype.revertToOriginal', ['UISourceCode.js'], function(callback) {
+    emitAction('applyOriginalContent', {
+        url: this.url
+    })
+});
+
+
 /**
  * @param {string} methodPath
  * @param {Array.<string>} dependentFiles
