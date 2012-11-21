@@ -1,4 +1,3 @@
-var RUN_TESTS = false;
 var _testPaths = {};
 
 /**
@@ -6,7 +5,6 @@ var _testPaths = {};
  * @param {Object=} data
  */
 function emitAction(name, data) {
-    // CodeSchool guys, feel free to change console.debug with your function name or window.postMessage
     var code = 'window.devToolsCallback(' + JSON.stringify({
         action: name,
         date: Date.now(),
