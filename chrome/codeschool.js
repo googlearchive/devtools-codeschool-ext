@@ -222,6 +222,22 @@ runAfter('WebInspector.UISourceCode.prototype.revertToOriginal', ['UISourceCode.
 });
 
 
+runAfter('WebInspector.ScriptsPanel.prototype.showAnchorLocation', ['ScriptsPanel.js'], function(anchor) {
+    if (typeof anchor.lineNumber !== 'number') {
+        throw new Error('anchor.lineNumber is not a number');
+    }
+
+    if (typeof anchor.href !== 'string') {
+        throw new Error('anchor.href is not a string');
+    }
+
+    emitAction('openSourceLink', {
+        url: anchor.href,
+        lineNumber: anchor.lineNumber
+    });
+});
+
+
 /**
  * @param {string} methodPath
  * @param {Array.<string>} dependentFiles
