@@ -70,7 +70,7 @@ runAfter('WebInspector.ElementsPanel.prototype._setPseudoClassForNodeId', ['Elem
 
     var id = node.getAttribute("id");
     emitAction("forcedElementState", {
-        id: id,
+        id: id || "",
         state: pseudoClass
     });
 });
