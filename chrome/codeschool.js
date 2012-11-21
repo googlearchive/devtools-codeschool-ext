@@ -216,7 +216,7 @@ runAfter('WebInspector.BreakpointManager.prototype.setBreakpoint', ['BreakpointM
 function runAfter(methodPath, dependentFiles, hook) {
 
     function callback() {
-        var matched = methodPath.match(/(.+?).([^.]+)$/);
+        var matched = methodPath.match(/(.+?)\.([^.]+)$/);
         var base = resolvePath(matched[1]).data;
         var lastKey = matched[2];
 
