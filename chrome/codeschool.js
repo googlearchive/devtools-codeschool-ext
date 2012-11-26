@@ -1,7 +1,6 @@
 function emitAction(data) {
-    console.log(data);
     data.date = Date.now();
-    var code = 'window.devToolsCallback(' + JSON.stringify(data) + ')';
+    var code = 'window.devToolsCallback && window.devToolsCallback(' + JSON.stringify(data) + ')';
     runtimeEval(code);
 }
 
