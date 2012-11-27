@@ -1,8 +1,17 @@
 function emitAction(data) {
     data.date = Date.now();
-    var code = 'window.devToolsCallback && window.devToolsCallback(' + JSON.stringify(data) + ')';
+    var code = 'window.postMessage(' + JSON.stringify(data) + ', "*")';
     runtimeEval(code);
 }
+
+runtimeEval('if (window.devToolsCallback && !window.devToolsWasInitialized_) {\n\
+    window.addEventListener("message", function(e) {\n\
+        window.devToolsCallback(e.data)\n\
+    }, false);\n\
+    window.devToolsWasInitialized_ = true;\n\
+}\n\
+\n\
+//@ sourceURL=devToolsCallback.js');
 
 /**
  * eval in web page context, e.g. CodeSchool page
