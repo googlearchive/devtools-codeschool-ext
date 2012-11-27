@@ -31,15 +31,23 @@ WebInspector.notifications.addEventListener(WebInspector.UserMetrics.UserAction,
 });
 
 
-WebInspector.panel('profiles').addEventListener('profile added', function(event) {
-    emitAction({
-        action: 'profileAdded',
-        type: event.data.type
-    });
-});
-
-
 var inspectorLoadedHandlers = [];
+
+function listenProfileAdded() {
+    WebInspector.panel('profiles').addEventListener('profile added', function(event) {
+        emitAction({
+            action: 'profileAdded',
+            type: event.data.type
+        });
+    });
+}
+
+if (WebInspector.inspectorView) {
+    listenProfileAdded();
+} else {
+    inspectorLoadedHandlers.push(listenProfileAdded);
+}
+
 
 function listenTimeline() {
     WebInspector.timelineManager.addEventListener(WebInspector.TimelineManager.EventTypes.TimelineStarted, function() {
