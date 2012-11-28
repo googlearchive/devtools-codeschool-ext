@@ -1,13 +1,10 @@
 function emitAction(data) {
     data.date = Date.now();
-    var code = 'window.postMessage(' + JSON.stringify(data) + ', "*")';
+    var code = '!window.devToolsWasInitialized_ && window.devToolsCallback && window.devToolsCallback(' + JSON.stringify(data) + ')';
     runtimeEval(code);
 }
 
 runtimeEval('if (window.devToolsCallback && !window.devToolsWasInitialized_) {\n\
-    window.addEventListener("message", function(e) {\n\
-        window.devToolsCallback(e.data)\n\
-    }, false);\n\
     window.devToolsWasInitialized_ = true;\n\
 }\n\
 \n\
@@ -92,6 +89,3 @@ if (WebInspector.settings && WebInspector.settings.pauseOnExceptionStateString) 
 inspectorLoadedHandlers.forEach(function(handler) {
     WebInspector.notifications.addEventListener(WebInspector.Events.InspectorLoaded, handler);
 });
-
-
-//@ sourceURL=codeschool.js
