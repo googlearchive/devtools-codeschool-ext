@@ -12,5 +12,5 @@
     }
   ],
 
-  "web_accessible_resources": ["codeschool.js"]
+  "web_accessible_resources": ["codeschool.js", "codeschool.png"]
 }
