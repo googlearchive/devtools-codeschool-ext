@@ -31,6 +31,24 @@ function diffObjects(a, b) {
 }
 
 
+function deepEqual(a, b) {
+    var aKeys = Object.keys(a);
+    var bKeys = Object.keys(b);
+    if (aKeys.length !== bKeys.length) {
+        return false;
+    }
+
+    for (var i = 0; i < aKeys.length; i++) {
+        var key = aKeys[i];
+        if (a[key] !== b[key]) {
+            return false;
+        }
+    }
+
+    return true;
+}
+
+
 var actual = null;
 function emitAction(data) {
     actual = data;
@@ -39,7 +57,14 @@ window.emitAction = emitAction;
 
 
 function expect(expected) {
-    console.log(actual, expected);
+    var isOk = deepEqual(expected, actual);
+    if (isOk) {
+        console.log('PASS', expected, actual);
+    } else {
+        console.warn('FAIL', expected, actual);
+    }
+
+    /*
     var diff = diffObjects(expected, actual);
     var out = [];
     if (diff.deleted.length) {
@@ -56,13 +81,27 @@ function expect(expected) {
         }
         out.push(changed);
     }
-    console.log(out.join(''));
+    var result = out.join('');
+    if (result) {
+        console.warn(result);
+    } else {
+        console.log('Pass');
+    }
+    */
 }
 
 
-function testForceState() {
+function $(query) {
+    return document.querySelector(query);
+}
+
+function openElementsPanel(callback) {
     document.querySelector('#toolbar .toolbar-item.elements').trigger('click');
-    setTimeout(function() {
+    setTimeout(callback, 500);
+}
+
+function testForceState() {
+    openElementsPanel(function() {
         document.querySelector('.pane-title-button.element-state').trigger('click');
         setTimeout(function() {
             document.querySelector('.styles-element-state-pane input[type="checkbox"]').trigger('click');
@@ -73,7 +112,21 @@ function testForceState() {
                 state: "active"
             });
         }, 500);
-    }, 500);
+    });
 }
 
 testForceState();
+
+function testClickResouceLink() {
+    openElementsPanel(function() {
+        $('.webkit-html-tag').trigger('click');
+        setTimeout(function() {
+            $('.webkit-html-resource-link').trigger('click');
+            expect({
+                action: 'sourceLinkClick',
+                url: 'file:///Users/nv/Code/devtools-codeschool-ext/test/test.css',
+                lineNumber: undefined
+            });
+        }, 500);
+    });
+}
