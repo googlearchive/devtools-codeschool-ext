@@ -2,8 +2,31 @@ Element.prototype.trigger = function(eventName) {
     if (eventName === 'click') {
         var event = document.createEvent("MouseEvents");
         event.initMouseEvent("click", true, true, window, 0, 0, 0, 0, 0, false, false, false, false, 0, null);
+    } else if (eventName === 'keypress') {
+        var event = document.createEvent("MouseEvents");
+        event.initKeyEvent('keypress', true, true, null, false, false, false, false, 9, 13);
     }
     return this.dispatchEvent(event);
+};
+
+Element.prototype.triggerKey = function(options) {
+    var event = document.createEvent("KeyboardEvent");
+    event.initKeyboardEvent(
+            options.type || 'keypress',
+            options.bubbles || false,
+            options.cancelable || true,
+            options.view || null,
+            options.ctrlKey || false,
+            options.altKey || false,
+            options.shiftKey || false,
+            options.metaKey || false,
+            options.keyCode || 0,
+            options.charCode || 0);
+    return this.dispatchEvent(event);
+};
+
+Element.prototype.type = function() {
+    // TODO
 };
 
 function diffObjects(a, b) {
@@ -105,6 +128,10 @@ function testForceState() {
         document.querySelector('.pane-title-button.element-state').trigger('click');
         setTimeout(function() {
             document.querySelector('.styles-element-state-pane input[type="checkbox"]').trigger('click');
+//            setTimeout(function() {
+//
+//            }, 500);
+
             expect({
                 action: "forcedElementState",
                 selector: "body",
@@ -115,7 +142,7 @@ function testForceState() {
     });
 }
 
-testForceState();
+//testForceState();
 
 function testClickResouceLink() {
     openElementsPanel(function() {
@@ -130,3 +157,4 @@ function testClickResouceLink() {
         }, 500);
     });
 }
+

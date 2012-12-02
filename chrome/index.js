@@ -1,7 +1,7 @@
-//if (location.protocol === 'chrome-devtools:') {
+if (location.protocol === 'chrome-devtools:') {
     console.log('Code School extension initialized');
     loadScript('codeschool.js');
-//}
+}
 
 
 function runTests() {

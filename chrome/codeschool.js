@@ -1,14 +1,19 @@
+var initTime = Date.now();
+
 function emitAction(data) {
     data.date = Date.now();
-    var code = '!window.devToolsWasInitialized_ && window.devToolsCallback && window.devToolsCallback(' + JSON.stringify(data) + ')';
+    var code = 'if (window.devToolsCallback) {\n\
+    if (!window.devToolsInitTime)\n\
+        window.devToolsInitTime = ' + initTime + ';\n\
+    \n\
+    if (window.devToolsInitTime == ' + initTime + ')\n\
+        window.devToolsCallback(' + JSON.stringify(data) + ');\n\
+}\n\
+//@ sourceURL=devToolsCallback.js';
+
     runtimeEval(code);
 }
 
-runtimeEval('if (window.devToolsCallback && !window.devToolsWasInitialized_) {\n\
-    window.devToolsWasInitialized_ = true;\n\
-}\n\
-\n\
-//@ sourceURL=devToolsCallback.js');
 
 /**
  * eval in web page context, e.g. CodeSchool page
