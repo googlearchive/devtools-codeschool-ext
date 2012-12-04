@@ -52,7 +52,13 @@ if (WebInspector.inspectorView) {
 function listenTimeline() {
     WebInspector.timelineManager.addEventListener(WebInspector.TimelineManager.EventTypes.TimelineStarted, function() {
         emitAction({
-            action: 'timelineSnapshot'
+            action: 'timelineStarted'
+        });
+    });
+
+    WebInspector.timelineManager.addEventListener(WebInspector.TimelineManager.EventTypes.TimelineStopped, function() {
+        emitAction({
+            action: 'timelineStopped'
         });
     });
 }
