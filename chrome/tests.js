@@ -82,7 +82,7 @@ window.emitAction = emitAction;
 function expect(expected) {
     var isOk = deepEqual(expected, actual);
     if (isOk) {
-        console.log('PASS', expected, actual);
+        console.log('PASS', expected.action);
     } else {
         console.warn('FAIL', expected, actual);
     }
@@ -114,32 +114,104 @@ function expect(expected) {
 }
 
 
+function equal(actual, expected, message) {
+    if (actual == expected) {
+        if (message) {
+            console.log('PASS', message);
+        } else {
+            console.log('PASS');
+        }
+    } else {
+        if (message) {
+            console.warn('FAIL', actual, expected, message);
+        } else {
+            console.warn('FAIL', actual, expected);
+        }
+    }
+}
+
 function $(query) {
     return document.querySelector(query);
 }
+
+function wait(callback) {
+    setTimeout(callback, 500);
+}
+
 
 function openElementsPanel(callback) {
     document.querySelector('#toolbar .toolbar-item.elements').trigger('click');
     setTimeout(callback, 500);
 }
 
+
+function openProfilesPanel(callback) {
+    document.querySelector('#toolbar .toolbar-item.profiles').trigger('click');
+    setTimeout(callback, 500);
+}
+
+
+function testProfileAdded() {
+    openProfilesPanel(function() {
+        $('.control-profiling').trigger('click');
+        wait(function() {
+            $('.control-profiling').trigger('click');
+            wait(function() {
+                expect({
+                    action: 'profileAdded',
+                    type: 'CPU'
+                })
+            })
+        });
+    });
+}
+
+
+function testTimelineSnapshot() {
+    document.querySelector('#toolbar .toolbar-item.timeline').trigger('click');
+    wait(function() {
+        document.querySelector('.record-profile-status-bar-item').trigger('click');
+        wait(function() {
+            document.querySelector('.record-profile-status-bar-item').trigger('click');
+            wait(function() {
+                expect({
+                    action: 'timelineSnapshot'
+                })
+            });
+        });
+    });
+}
+
+
 function testForceState() {
-    openElementsPanel(function() {
-        document.querySelector('.pane-title-button.element-state').trigger('click');
-        setTimeout(function() {
-            document.querySelector('.styles-element-state-pane input[type="checkbox"]').trigger('click');
+
+	$('.pane-title-button.element-state').trigger('click').then(function() {
+		$('.styles-element-state-pane input[type="checkbox"]').trigger('click').then(function() {
+			expect({
+				action: "forcedElementState",
+				selector: "body",
+				enabled: true,
+				state: "active"
+			});
+		});
+	});
+
+//    openElementsPanel(function() {
+//        document.querySelector('.pane-title-button.element-state').trigger('click');
+//        setTimeout(function() {
+//            document.querySelector('.styles-element-state-pane input[type="checkbox"]').trigger('click');
 //            setTimeout(function() {
 //
 //            }, 500);
 
-            expect({
-                action: "forcedElementState",
-                selector: "body",
-                enabled: true,
-                state: "active"
-            });
-        }, 500);
-    });
+//            expect({
+//                action: "forcedElementState",
+//                selector: "body",
+//                enabled: true,
+//                state: "active"
+//            });
+//        }, 500);
+//    });
 }
 
 //testForceState();
@@ -158,3 +230,13 @@ function testClickResouceLink() {
     });
 }
 
+
+function testPauseOnException() {
+    $('#toolbar .toolbar-item.scripts').click();
+    wait(function() {
+        $('.scripts-pause-on-exceptions-status-bar-item').click();
+        wait(function() {
+            equal(actual.action, 'pauseOnException')
+        })
+    })
+}
