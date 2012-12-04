@@ -29,7 +29,7 @@ function runtimeEval(expression) {
             undefined,
             /*returnByValue*/ false,
             /*generatePreview*/ false,
-            function evalCallback(result, meta, wasThrown) {
+            function evalCallback(x, result, wasThrown) {
                 if (wasThrown) {
                     console.warn(result);
                 }

@@ -1,13 +1,12 @@
 ## Installing
 
 1. Open chrome://extensions/
-2. Press Load unpacked extension...
+2. Press "Load unpacked extension..." button
 3. Choose "devtools-codeschool-ext/chrome" directory
 
 ## Usage
 
-1. Open DevTools [1]
-2. Undock it
-3. Press Cmd + Alt + i to open DevTools [2] to inspect [1]
+1. Open [test/index.html](https://github.com/GoogleChrome/devtools-codeschool-ext/blob/master/test/index.html)
+2. Open DevTools
 
-Try "Force Element State" in [1]. It should log the action to the console of [2].
+Try "Force Element State". It should log the action in the console of DevTools.

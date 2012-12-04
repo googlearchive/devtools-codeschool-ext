@@ -124,22 +124,34 @@ function openElementsPanel(callback) {
 }
 
 function testForceState() {
-    openElementsPanel(function() {
-        document.querySelector('.pane-title-button.element-state').trigger('click');
-        setTimeout(function() {
-            document.querySelector('.styles-element-state-pane input[type="checkbox"]').trigger('click');
+
+	$('.pane-title-button.element-state').trigger('click').then(function() {
+		$('.styles-element-state-pane input[type="checkbox"]').trigger('click').then(function() {
+			expect({
+				action: "forcedElementState",
+				selector: "body",
+				enabled: true,
+				state: "active"
+			});
+		});
+	});
+
+//    openElementsPanel(function() {
+//        document.querySelector('.pane-title-button.element-state').trigger('click');
+//        setTimeout(function() {
+//            document.querySelector('.styles-element-state-pane input[type="checkbox"]').trigger('click');
 //            setTimeout(function() {
 //
 //            }, 500);
 
-            expect({
-                action: "forcedElementState",
-                selector: "body",
-                enabled: true,
-                state: "active"
-            });
-        }, 500);
-    });
+//            expect({
+//                action: "forcedElementState",
+//                selector: "body",
+//                enabled: true,
+//                state: "active"
+//            });
+//        }, 500);
+//    });
 }
 
 //testForceState();

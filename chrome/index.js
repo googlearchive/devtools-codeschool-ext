@@ -5,6 +5,7 @@ if (location.protocol === 'chrome-devtools:') {
 
 
 function runTests() {
+    loadScript('jquery.js');
     loadScript('tests.js');
 }
 
@@ -16,6 +17,7 @@ function loadScript(name, callback) {
     var script = document.createElement('script');
     script.type = 'text/javascript';
     script.src = chrome.extension.getURL(name);
+	script.defer = true;
     (document.head || document.body || document.documentElement).appendChild(script);
 
     if (callback)
