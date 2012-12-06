@@ -82,7 +82,7 @@ function listenSettings() {
 if (WebInspector.settings && WebInspector.settings.pauseOnExceptionStateString) {
     listenSettings();
 } else {
-    inspectorLoadedHandlers.push(listenTimeline);
+    inspectorLoadedHandlers.push(listenSettings);
 }
 
 
