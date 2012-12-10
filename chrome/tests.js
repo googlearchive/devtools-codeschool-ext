@@ -1,7 +1,7 @@
 Element.prototype.trigger = function(eventName) {
-    if (eventName === 'click') {
+    if (eventName === 'click' || eventName == 'mousedown') {
         var event = document.createEvent("MouseEvents");
-        event.initMouseEvent("click", true, true, window, 0, 0, 0, 0, 0, false, false, false, false, 0, null);
+        event.initMouseEvent(eventName, true, true, window, 0, 0, 0, 0, 0, false, false, false, false, 0, null);
     } else if (eventName === 'keypress') {
         var event = document.createEvent("MouseEvents");
         event.initKeyEvent('keypress', true, true, null, false, false, false, false, 9, 13);
@@ -55,6 +55,14 @@ function diffObjects(a, b) {
 
 
 function deepEqual(a, b) {
+    if (a === b) {
+        return true;
+    }
+
+    if (typeof a !== 'object' && typeof b !== 'object') {
+        return false;
+    }
+
     var aKeys = Object.keys(a);
     var bKeys = Object.keys(b);
     if (aKeys.length !== bKeys.length) {
@@ -211,19 +219,23 @@ function testForceState() {
 //    });
 }
 
+function query(selector) {
+    return document.querySelector(selector);
+}
+
 //testForceState();
 
 function testClickResouceLink() {
     openElementsPanel(function() {
-        $('.webkit-html-tag').trigger('click');
-        setTimeout(function() {
-            $('.webkit-html-resource-link').trigger('click');
+        query('.webkit-html-tag').trigger('mousedown');
+        wait(function() {
+            query('.webkit-html-resource-link').trigger('click');
             expect({
-                action: 'sourceLinkClick',
+                action: 'openSourceLink',
                 url: 'file:///Users/nv/Code/devtools-codeschool-ext/test/test.css',
-                lineNumber: undefined
+                lineNumber: 0
             });
-        }, 500);
+        });
     });
 }
 
