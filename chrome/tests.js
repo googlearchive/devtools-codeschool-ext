@@ -130,9 +130,6 @@ function equal(actual, expected, message) {
     }
 }
 
-function $(query) {
-    return document.querySelector(query);
-}
 
 function wait(callback) {
     setTimeout(callback, 500);
