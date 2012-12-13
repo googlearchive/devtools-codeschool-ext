@@ -18,7 +18,7 @@ function runtimeEval(expression) {
             undefined,
             /*returnByValue*/ false,
             /*generatePreview*/ false,
-            function evalCallback(result, meta, wasThrown) {
+            function evalCallback(x, result, wasThrown) {
                 if (wasThrown) {
                     console.warn(result);
                 }
@@ -52,7 +52,13 @@ if (WebInspector.inspectorView) {
 function listenTimeline() {
     WebInspector.timelineManager.addEventListener(WebInspector.TimelineManager.EventTypes.TimelineStarted, function() {
         emitAction({
-            action: 'timelineSnapshot'
+            action: 'timelineStarted'
+        });
+    });
+
+    WebInspector.timelineManager.addEventListener(WebInspector.TimelineManager.EventTypes.TimelineStopped, function() {
+        emitAction({
+            action: 'timelineStopped'
         });
     });
 }
@@ -76,7 +82,7 @@ function listenSettings() {
 if (WebInspector.settings && WebInspector.settings.pauseOnExceptionStateString) {
     listenSettings();
 } else {
-    inspectorLoadedHandlers.push(listenTimeline);
+    inspectorLoadedHandlers.push(listenSettings);
 }
 
 
