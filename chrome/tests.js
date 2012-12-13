@@ -3,14 +3,20 @@ Element.prototype.trigger = function(eventName) {
         var event = document.createEvent("MouseEvents");
         event.initMouseEvent(eventName, true, true, window, 0, 0, 0, 0, 0, false, false, false, false, 0, null);
     } else if (eventName === 'keypress') {
-        var event = document.createEvent("MouseEvents");
+        event = document.createEvent("MouseEvents");
         event.initKeyEvent('keypress', true, true, null, false, false, false, false, 9, 13);
+    } else {
+        event = document.createEvent('HTMLEvents');
+        event.initEvent(eventName, true, false);
     }
-    return this.dispatchEvent(event);
+    this.dispatchEvent(event);
 };
 
 Element.prototype.triggerKey = function(options) {
     var event = document.createEvent("KeyboardEvent");
+    if (!options) {
+        options = {};
+    }
     event.initKeyboardEvent(
             options.type || 'keypress',
             options.bubbles || false,
@@ -158,7 +164,7 @@ function openProfilesPanel(callback) {
 
 function testProfileAdded() {
     openProfilesPanel(function() {
-        $('.control-profiling').trigger('click');
+        query('[name="profile-type"]').trigger('click');
         wait(function() {
             $('.control-profiling').trigger('click');
             wait(function() {
@@ -168,6 +174,44 @@ function testProfileAdded() {
                 })
             })
         });
+    });
+}
+
+
+function testHeapSnapshot() {
+    openProfilesPanel(function() {
+        Syn.click(query('.profile-launcher-view-tree-item'));
+        wait(function() {
+            queryAll('[name="profile-type"]')[2].trigger('click');
+            wait(function() {
+                Syn.click(query('.control-profiling'));
+                wait(function() {
+                    expect({
+                        action: 'profileAdded',
+                        type: 'HEAP'
+                    });
+                    Syn.click(query('.profile-launcher-view-tree-item'));
+                    wait(function() {
+                        Syn.click(query('.control-profiling'));
+                        wait(function() {
+                            Syn.click(query('.heap-snapshot-sidebar-tree-item'));
+                            wait(function() {
+                                var select = $('select.status-bar-item:last');
+                                select[0].selectedIndex = 2;
+                                select[0].trigger('change');
+                                //select.trigger('change');
+                                // jQuery's trigger does not work for some reason
+                                wait(function(){
+                                    expect({action: "heapSnapshotFilterChanged", label: "Objects allocated between Snapshots 1 and 2"} );
+                                });
+
+                                //TODO: implement promises
+                            });
+                        });
+                    });
+                })
+            });
+        })
     });
 }
 
@@ -189,43 +233,29 @@ function testTimelineSnapshot() {
 
 
 function testForceState() {
-
-	$('.pane-title-button.element-state').trigger('click').then(function() {
-		$('.styles-element-state-pane input[type="checkbox"]').trigger('click').then(function() {
-			expect({
-				action: "forcedElementState",
-				selector: "body",
-				enabled: true,
-				state: "active"
-			});
-		});
-	});
-
-//    openElementsPanel(function() {
-//        document.querySelector('.pane-title-button.element-state').trigger('click');
-//        setTimeout(function() {
-//            document.querySelector('.styles-element-state-pane input[type="checkbox"]').trigger('click');
-//            setTimeout(function() {
-//
-//            }, 500);
-
-//            expect({
-//                action: "forcedElementState",
-//                selector: "body",
-//                enabled: true,
-//                state: "active"
-//            });
-//        }, 500);
-//    });
+    $('.pane-title-button.element-state').trigger('click').then(function() {
+        $('.styles-element-state-pane input[type="checkbox"]').trigger('click').then(function() {
+            expect({
+                action: "forcedElementState",
+                selector: "body",
+                enabled: true,
+                state: "active"
+            });
+        });
+    });
 }
 
 function query(selector) {
     return document.querySelector(selector);
 }
 
-//testForceState();
 
-function testClickResouceLink() {
+function queryAll(selector) {
+    return document.querySelectorAll(selector);
+}
+
+
+function testClickResouceLinkandTogglePrettyPrint() {
     openElementsPanel(function() {
         query('.webkit-html-tag').trigger('mousedown');
         wait(function() {
@@ -235,10 +265,17 @@ function testClickResouceLink() {
                 url: 'file:///Users/nv/Code/devtools-codeschool-ext/test/test.css',
                 lineNumber: 0
             });
+            wait(function() {
+                query('.scripts-toggle-pretty-print-status-bar-item').trigger('click');
+                expect({
+                    action: "togglePrettyPrint",
+                    enabled: true,
+                    url: "file:///Users/nv/Code/devtools-codeschool-ext/test/test.css"
+                });
+            });
         });
     });
 }
-
 
 function testPauseOnException() {
     $('#toolbar .toolbar-item.scripts').click();
