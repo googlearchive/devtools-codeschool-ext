@@ -286,3 +286,39 @@ function testPauseOnException() {
         })
     })
 }
+
+
+function testNetwork() {
+    $('#toolbar .toolbar-item.network').click();
+    wait(function() {
+        runtimeEval('location.reload()');
+        setTimeout(function() {
+            Syn.click(query('.method-column.sortable')).click(query('.name-column.sortable'));
+            wait(function() {
+                expect({
+                    action: "networkSort",
+                    column: "name",
+                    sortOrder: "ascending"
+                });
+                Syn.click(query('.network-item div[title]'));
+                wait(function() {
+                    expect({
+                        action: "networkRequestSelected",
+                        url: "file:///Users/nv/Code/devtools-codeschool-ext/test/index.html"
+                    });
+                    Syn.click(query('#tab-preview'));
+                    wait(function() {
+                        Syn.click(query('#tab-headers'));
+                        wait(function() {
+                            expect({
+                                action: "networkRequestTabSelected",
+                                tab: "headers",
+                                url: "file:///Users/nv/Code/devtools-codeschool-ext/test/index.html"
+                            });
+                        });
+                    });
+                });
+            });
+        }, 2000);
+    });
+}
