@@ -272,6 +272,51 @@ function testClickResouceLinkandTogglePrettyPrint() {
                     enabled: true,
                     url: "file:///Users/nv/Code/devtools-codeschool-ext/test/test.css"
                 });
+                wait(function() {
+                    query('.webkit-css-selector').textContent = 'HTML';
+                    wait(function() {
+                        // Save
+                        Syn.click(query('.text-editor-contents .webkit-line-content'));
+                        query('.text-editor-contents > .inner-container').triggerKey({
+                            keyCode: 83,
+                            metaKey: true
+                        });
+                        wait(function() {
+                            expect({
+                                action: 'fileSaved',
+                                url: 'file:///Users/nv/Code/devtools-codeschool-ext/test/test.css'
+                            });
+                            wait(function() {
+                                Syn.click($('.soft-context-menu-item').filter(function(i) {
+                                    return this.textContent.indexOf('Local modifications...') !== -1;
+                                }));
+                                wait(function() {
+                                    Syn.click(query('.revision-history-drawer > ol > .parent:not(.expanded)'));
+                                    wait(function() {
+                                        Syn.click(query('.revision-history-link.revision-history-link-row'));
+                                        wait(function() {
+                                            expect({
+                                                action: "applyOriginalContent",
+                                                url: "file:///Users/nv/Code/devtools-codeschool-ext/test/test.css"
+                                            });
+                                            wait(function() {
+                                                Syn.click($('.revision-history-link').filter(function() {
+                                                    return /revert/i.test(this.textContent);
+                                                }));
+                                                wait(function() {
+                                                    expect({
+                                                        action: "revertRevision",
+                                                        url: "file:///Users/nv/Code/devtools-codeschool-ext/test/test.css"
+                                                    });
+                                                })
+                                            });
+                                        })
+                                    });
+                                });
+                            });
+                        })
+                    });
+                });
             });
         });
     });
