@@ -1,10 +1,23 @@
-Element.prototype.trigger = function(eventName) {
+Element.prototype.trigger = function(eventName, options) {
+    if (!options) {
+        options = {};
+    }
     if (eventName === 'click' || eventName == 'mousedown') {
         var event = document.createEvent("MouseEvents");
         event.initMouseEvent(eventName, true, true, window, 0, 0, 0, 0, 0, false, false, false, false, 0, null);
     } else if (eventName === 'keypress') {
         event = document.createEvent("MouseEvents");
         event.initKeyEvent('keypress', true, true, null, false, false, false, false, 9, 13);
+    } else if (eventName === 'textInput') {
+        event = document.createEvent('TextEvent');
+        event.initTextEvent(
+            eventName,
+            options.bubbles || false,
+            options.cancelable || true,
+            options.view || null,
+            options.data || '\n',
+            0
+        );
     } else {
         event = document.createEvent('HTMLEvents');
         event.initEvent(eventName, true, false);
@@ -145,6 +158,7 @@ function equal(actual, expected, message) {
 }
 
 
+//TODO: Use Syn.then doesn't work. Figure out why
 function wait(callback) {
     setTimeout(callback, 500);
 }
@@ -277,44 +291,46 @@ function testClickResouceLinkandTogglePrettyPrint() {
                     wait(function() {
                         // Save
                         Syn.click(query('.text-editor-contents .webkit-line-content'));
-                        query('.text-editor-contents > .inner-container').triggerKey({
-                            keyCode: 83,
-                            metaKey: true
-                        });
                         wait(function() {
-                            expect({
-                                action: 'fileSaved',
-                                url: 'file:///Users/nv/Code/devtools-codeschool-ext/test/test.css'
+                            query('.text-editor-contents > .inner-container').trigger('textInput', {
+                                data: '\n'
                             });
                             wait(function() {
-                                Syn.click($('.soft-context-menu-item').filter(function(i) {
-                                    return this.textContent.indexOf('Local modifications...') !== -1;
-                                }));
+                                expect({
+                                    action: 'fileSaved',
+                                    url: 'file:///Users/nv/Code/devtools-codeschool-ext/test/test.css'
+                                });
+                                query('.text-editor-contents > .inner-container').trigger('contextmenu');
                                 wait(function() {
-                                    Syn.click(query('.revision-history-drawer > ol > .parent:not(.expanded)'));
+                                    Syn.click($('.soft-context-menu-item').filter(function(i) {
+                                        return this.textContent.indexOf('Local modifications...') !== -1;
+                                    }));
                                     wait(function() {
-                                        Syn.click(query('.revision-history-link.revision-history-link-row'));
+                                        Syn.click(query('.revision-history-drawer > ol > .parent:not(.expanded)'));
                                         wait(function() {
-                                            expect({
-                                                action: "applyOriginalContent",
-                                                url: "file:///Users/nv/Code/devtools-codeschool-ext/test/test.css"
-                                            });
+                                            Syn.click(query('.revision-history-link.revision-history-link-row'));
                                             wait(function() {
-                                                Syn.click($('.revision-history-link').filter(function() {
-                                                    return /revert/i.test(this.textContent);
-                                                }));
+                                                expect({
+                                                    action: "applyOriginalContent",
+                                                    url: "file:///Users/nv/Code/devtools-codeschool-ext/test/test.css"
+                                                });
                                                 wait(function() {
-                                                    expect({
-                                                        action: "revertRevision",
-                                                        url: "file:///Users/nv/Code/devtools-codeschool-ext/test/test.css"
-                                                    });
-                                                })
-                                            });
-                                        })
+                                                    Syn.click($('.revision-history-link').filter(function() {
+                                                        return /revert/i.test(this.textContent);
+                                                    }));
+                                                    wait(function() {
+                                                        expect({
+                                                            action: "revertRevision",
+                                                            url: "file:///Users/nv/Code/devtools-codeschool-ext/test/test.css"
+                                                        });
+                                                    })
+                                                });
+                                            })
+                                        });
                                     });
                                 });
-                            });
-                        })
+                            })
+                        });
                     });
                 });
             });
