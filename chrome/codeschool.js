@@ -71,6 +71,16 @@ if (WebInspector.timelineManager) {
 
 
 function listenSettings() {
+    WebInspector.settings.consoleHistory.addChangeListener(function(event) {
+        var data = event.data;
+        if (!data || !data.length)
+            return;
+        var lastItem = data[data.length - 1];
+        emitAction({
+            action: 'consoleUserInput',
+            data: lastItem
+        });
+    });
     WebInspector.settings.pauseOnExceptionStateString.addChangeListener(function(event) {
         emitAction({
             action: 'pauseOnException',
