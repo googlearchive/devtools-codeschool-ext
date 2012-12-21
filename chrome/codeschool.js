@@ -1,7 +1,7 @@
 (function() {
 
     var DEBUG = true;
-    var MATCHES = /https?:[/][/]www[.]codeschool[.]com[/]/;
+    var MATCHES = /^https?:[/][/]www[.]codeschool[.]com[/]/; //FIXME: put the course URL here
 
     WebInspector.notifications.addEventListener(WebInspector.Events.InspectorLoaded, initialize);
 
@@ -62,7 +62,7 @@
      * eval in web page context, e.g. CodeSchool page
      * @param {string} expression
      */
-    function runtimeEval(expression, callback) {
+    function runtimeEval(expression) {
         // https://developers.google.com/chrome-developer-tools/docs/protocol/1.0/runtime#command-evaluate
         RuntimeAgent.evaluate(
             expression,
@@ -72,11 +72,11 @@
             undefined,
             /*returnByValue*/ false,
             /*generatePreview*/ false,
-            callback || (function evalCallback(x, result, wasThrown) {
+            function evalCallback(x, result, wasThrown) {
                 if (wasThrown) {
                     console.warn(result);
                 }
-            })
+            }
         );
     }
 
