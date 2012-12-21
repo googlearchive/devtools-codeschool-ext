@@ -218,7 +218,7 @@ var Syn = (function(){
                 } else if ( typeof arguments[i] === 'string' ) { //we can get by id
                     var jq = jQuery(arguments[i]);
                     if (jq.length === 0) {
-                        throw arguments[i] + ' is missing';
+                        throw new Error(arguments[i] + ' is missing');
                     }
                     res.element = jq[0];
                 }
@@ -705,7 +705,7 @@ var Syn = (function(){
                 callback = timeout;
                 timeout = null;
             }
-            timeout = timeout || 600;
+            timeout = timeout || 1600;
             var self = this;
             this.queue.unshift(function() {
                 setTimeout(function() {

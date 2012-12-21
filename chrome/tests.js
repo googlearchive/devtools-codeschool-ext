@@ -109,6 +109,12 @@ function emitAction(data) {
 window.emitAction = emitAction;
 
 
+function expectSoon(expected) {
+    wait(function() {
+        expect(expected);
+    });
+}
+
 function expect(expected) {
     var isOk = deepEqual(expected, actual);
     if (isOk) {
@@ -180,56 +186,39 @@ function openProfilesPanel(callback) {
 
 
 function testProfileAdded() {
-    openProfilesPanel(function() {
-        query('[name="profile-type"]').trigger('click');
-        wait(function() {
-            $('.control-profiling').trigger('click');
-            wait(function() {
-                expect({
-                    action: 'profileAdded',
-                    type: 'CPU'
-                })
+    Syn.click('#toolbar .toolbar-item.profiles')
+        .click('[name="profile-type"]')
+        .click('.control-profiling')
+        .click(function() {
+            expectSoon({
+                action: 'profileAdded',
+                type: 'CPU'
             })
         });
-    });
 }
 
 
 function testHeapSnapshot() {
-    openProfilesPanel(function() {
-        Syn.click('.profile-launcher-view-tree-item').then('click', '[name="profile-type"]:eq(2)');
-        wait(function() {
-            queryAll('[name="profile-type"]')[2].trigger('click');
-            wait(function() {
-                Syn.click(query('.control-profiling'));
-                wait(function() {
-                    expect({
-                        action: 'profileAdded',
-                        type: 'HEAP'
-                    });
-                    Syn.click(query('.profile-launcher-view-tree-item'));
-                    wait(function() {
-                        Syn.click(query('.control-profiling'));
-                        wait(function() {
-                            Syn.click(query('.heap-snapshot-sidebar-tree-item'));
-                            wait(function() {
-                                var select = $('select.status-bar-item:last');
-                                select[0].selectedIndex = 2;
-                                select[0].trigger('change');
-                                //select.trigger('change');
-                                // jQuery's trigger does not work for some reason
-                                wait(function(){
-                                    expect({action: "heapSnapshotFilterChanged", label: "Objects allocated between Snapshots 1 and 2"} );
-                                });
-
-                                //TODO: implement promises
-                            });
-                        });
-                    });
-                })
+    Syn.click('#toolbar .toolbar-item.profiles')
+        .click('.profile-launcher-view-tree-item')
+        .click('[name="profile-type"]:eq(2)')
+        .click('.control-profiling', function() {
+            expectSoon({
+                action: 'profileAdded',
+                type: 'HEAP'
             });
         })
-    });
+        .click('.profile-launcher-view-tree-item')
+        .click('.control-profiling')
+        .click('.heap-snapshot-sidebar-tree-item')
+        .click('select.status-bar-item:last', function() {
+            var select = $('select.status-bar-item:last');
+            select[0].selectedIndex = 2;
+            select[0].trigger('change');
+            //select.trigger('change');
+            // jQuery's trigger does not work for some reason
+            expectSoon({action: "heapSnapshotFilterChanged", label: "Objects allocated between Snapshots 1 and 2"} );
+        });
 }
 
 
