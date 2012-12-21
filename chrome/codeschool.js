@@ -15,7 +15,29 @@
 
     function setupListeners() {
         WebInspector.notifications.addEventListener(WebInspector.UserMetrics.UserAction, function(event) {
-            emitAction(event.data);
+            if (!event.data.action) {
+                return;
+            }
+            switch (event.data.action) {
+                case 'forcedElementState':
+                case 'fileSaved':
+                case 'revertRevision':
+                case 'applyOriginalContent':
+                case 'togglePrettyPrint':
+                case 'setBreakpoint':
+                case 'openSourceLink':
+                case 'networkSort':
+                case 'networkRequestSelected':
+                case 'networkRequestTabSelected':
+                case 'heapSnapshotFilterChanged':
+                    emitAction(event.data);
+                    break;
+                default:
+                    if (DEBUG) {
+                        console.warn(JSON.stringify(event.data.action) + ' is ignored. ', event.data);
+                    }
+                    break;
+            }
         });
 
         WebInspector.panel('profiles').addEventListener('profile added', function(event) {
