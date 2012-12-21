@@ -206,7 +206,7 @@ var Syn = (function(){
             if (!args.element) {
                 var jq = jQuery(args.selector);
                 if (jq.length === 0) {
-                    throw new Error(arguments[i] + ' is missing');
+                    throw new Error(args[i] + ' is missing');
                 }
                 args.element = jq[0];
             }
@@ -691,7 +691,11 @@ var Syn = (function(){
             this.queue.unshift(function( el, prevented ) {
 
                 if ( typeof this[type] === "function" ) {
-                    this.element = Syn._getElement(args) || el;
+                    if (args.element || args.selector) {
+                        this.element = Syn._getElement(args);
+                    } else {
+                        this.element = el;
+                    }
                     this[type](args.options, this.element, function( defaults, el ) {
                         args.callback && args.callback.apply(self, arguments);
                         self.done.apply(self, arguments);

@@ -223,18 +223,13 @@ function testHeapSnapshot() {
 
 
 function testTimelineSnapshot() {
-    document.querySelector('#toolbar .toolbar-item.timeline').trigger('click');
-    wait(function() {
-        document.querySelector('.record-profile-status-bar-item').trigger('click');
-        wait(function() {
-            document.querySelector('.record-profile-status-bar-item').trigger('click');
-            wait(function() {
-                expect({
-                    action: 'timelineSnapshot'
-                })
-            });
+    Syn.click('#toolbar .toolbar-item.timeline')
+        .click('.record-profile-status-bar-item')
+        .click(function() {
+            expectSoon({
+                action: 'timelineSnapshot'
+            })
         });
-    });
 }
 
 
