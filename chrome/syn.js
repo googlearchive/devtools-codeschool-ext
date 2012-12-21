@@ -176,11 +176,12 @@ var Syn = (function(){
             var args = Syn.args(options, element, callback),
                 self = this;
             this.queue = [];
-            this.element = args.element;
+
+            this.element = Syn._getElement(args);
 
             //run event
             if ( typeof this[type] === "function" ) {
-                this[type](args.options, args.element, function( defaults, el ) {
+                this[type](args.options, this.element, function( defaults, el ) {
                     args.callback && args.callback.apply(self, arguments);
                     self.done.apply(self, arguments);
                 });
@@ -200,6 +201,18 @@ var Syn = (function(){
                 return window.jQuery;
             }
         },
+
+        _getElement: function(args) {
+            if (!args.element) {
+                var jq = jQuery(args.selector);
+                if (jq.length === 0) {
+                    throw new Error(arguments[i] + ' is missing');
+                }
+                args.element = jq[0];
+            }
+            return args.element;
+        },
+
         /**
          * Returns an object with the args for a Syn.
          * @hide
@@ -216,11 +229,7 @@ var Syn = (function(){
                 } else if ( arguments[i] && arguments[i].nodeName ) {
                     res.element = arguments[i];
                 } else if ( typeof arguments[i] === 'string' ) { //we can get by id
-                    var jq = jQuery(arguments[i]);
-                    if (jq.length === 0) {
-                        throw new Error(arguments[i] + ' is missing');
-                    }
-                    res.element = jq[0];
+                    res.selector = arguments[i];
                 }
                 else if ( arguments[i] ) {
                     res.options = arguments[i];
@@ -682,7 +691,7 @@ var Syn = (function(){
             this.queue.unshift(function( el, prevented ) {
 
                 if ( typeof this[type] === "function" ) {
-                    this.element = args.element || el;
+                    this.element = Syn._getElement(args) || el;
                     this[type](args.options, this.element, function( defaults, el ) {
                         args.callback && args.callback.apply(self, arguments);
                         self.done.apply(self, arguments);
@@ -705,7 +714,7 @@ var Syn = (function(){
                 callback = timeout;
                 timeout = null;
             }
-            timeout = timeout || 1600;
+            timeout = timeout || 600;
             var self = this;
             this.queue.unshift(function() {
                 setTimeout(function() {
