@@ -1,3 +1,7 @@
+// This file has been built manually from https://github.com/bitovi/syn/tree/b4efe4fbf201806b78a55412e8ed2ffb353ccff3
+// I don't know how to use https://github.com/bitovi/syn/blob/master/build.js
+
+
 var Syn = (function(){
     var extend = function( d, s ) {
             var p;
@@ -211,8 +215,12 @@ var Syn = (function(){
                     res.element = arguments[i][0];
                 } else if ( arguments[i] && arguments[i].nodeName ) {
                     res.element = arguments[i];
-                } else if ( res.options && typeof arguments[i] === 'string' ) { //we can get by id
-                    res.element = document.getElementById(arguments[i]);
+                } else if ( typeof arguments[i] === 'string' ) { //we can get by id
+                    var jq = jQuery(arguments[i]);
+                    if (jq.length === 0) {
+                        throw arguments[i] + ' is missing';
+                    }
+                    res.element = jq[0];
                 }
                 else if ( arguments[i] ) {
                     res.options = arguments[i];

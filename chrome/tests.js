@@ -1,3 +1,6 @@
+Syn.autoDelay = true;
+
+
 Element.prototype.trigger = function(eventName, options) {
     if (!options) {
         options = {};
@@ -194,7 +197,7 @@ function testProfileAdded() {
 
 function testHeapSnapshot() {
     openProfilesPanel(function() {
-        Syn.click(query('.profile-launcher-view-tree-item'));
+        Syn.click('.profile-launcher-view-tree-item').then('click', '[name="profile-type"]:eq(2)');
         wait(function() {
             queryAll('[name="profile-type"]')[2].trigger('click');
             wait(function() {
