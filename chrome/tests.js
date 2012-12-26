@@ -234,16 +234,15 @@ function testTimelineSnapshot() {
 
 
 function testForceState() {
-    $('.pane-title-button.element-state').trigger('click').then(function() {
-        $('.styles-element-state-pane input[type="checkbox"]').trigger('click').then(function() {
-            expect({
+    Syn.click('.pane-title-button.element-state')
+        .click('.styles-element-state-pane input[type="checkbox"]', function() {
+            expectSoon({
                 action: "forcedElementState",
                 selector: "body",
                 enabled: true,
                 state: "active"
-            });
+            })
         });
-    });
 }
 
 function query(selector) {
