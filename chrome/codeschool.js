@@ -75,6 +75,8 @@
     }
 
     function emitAction(data) {
+        window.postMessage({from: 'devtools', data: data}, '*');
+
         data.date = Date.now();
         var code = 'window.devToolsCallback && window.devToolsCallback(' + JSON.stringify(data) + ')';
         runtimeEval(code);

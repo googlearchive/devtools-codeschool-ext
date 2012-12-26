@@ -8,9 +8,19 @@
   "content_scripts": [
     {
       "matches": ["<all_urls>"],
+      "js": ["codeschool_content.js"],
+      "run_at": "document_start"
+    },
+    {
+      "matches": ["<all_urls>"],
       "js": ["index.js"]
     }
   ],
+
+  "background": {
+    "scripts": ["codeschool_background.js"],
+    "persistent": false
+  },
 
   "web_accessible_resources": ["codeschool.js", "codeschool.png"]
 }

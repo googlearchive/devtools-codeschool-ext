@@ -8,6 +8,12 @@ if (location.protocol === 'chrome-devtools:') (function(){
     script.src = chrome.extension.getURL('codeschool.js');
     (document.head || document.body || document.documentElement).appendChild(script);
 
+    window.addEventListener('message', function(event) {
+        if (event.data && event.data.from === 'devtools') {
+            chrome.extension.sendMessage(event.data);
+        }
+    }, false);
+
 })();
 
 //@ sourceURL=index.js
