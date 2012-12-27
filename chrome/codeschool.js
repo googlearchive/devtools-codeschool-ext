@@ -1,17 +1,7 @@
 (function() {
 
     var DEBUG = true;
-    var MATCHES = /^https?:[/][/]www[.]codeschool[.]com[/]/; //FIXME: put the course URL here
-
-    WebInspector.notifications.addEventListener(WebInspector.Events.InspectorLoaded, initialize);
-
-    function initialize() {
-        WebInspector.resourceTreeModel.addEventListener(WebInspector.ResourceTreeModel.EventTypes.InspectedURLChanged, function(event) {
-            if (event.data && event.data.match(MATCHES) || DEBUG) {
-                setupListeners();
-            }
-        });
-    }
+    setupListeners();
 
     function setupListeners() {
         WebInspector.notifications.addEventListener(WebInspector.UserMetrics.UserAction, function(event) {
@@ -75,11 +65,7 @@
     }
 
     function emitAction(data) {
-        window.postMessage({from: 'devtools', data: data}, '*');
-
-        data.date = Date.now();
-        var code = 'window.devToolsCallback && window.devToolsCallback(' + JSON.stringify(data) + ')';
-        runtimeEval(code);
+        window.postMessage({command: 'emit', data: data}, '*');
     }
 
     /**

@@ -3,12 +3,12 @@ window.addEventListener('message', function(event) {
     if (event.source != window)
         return;
 
-    if (!event.data || !event.data.action)
+    if (!event.data || !event.data.command)
         return;
 
-    if (event.data.action === 'codeschool.enable') {
+    if (event.data.command === 'codeschool.enable') {
         chrome.extension.sendMessage({action: 'enable'});
-    } else if (event.data.action === 'codeschool.disable') {
+    } else if (event.data.command === 'codeschool.disable') {
         chrome.extension.sendMessage({action: 'disable'});
     }
 }, false);
