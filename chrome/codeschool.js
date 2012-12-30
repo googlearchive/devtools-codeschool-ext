@@ -5,26 +5,43 @@
 
     function setupListeners() {
         WebInspector.notifications.addEventListener(WebInspector.UserMetrics.UserAction, function(event) {
-            if (!event.data.action) {
-                return;
-            }
-            switch (event.data.action) {
+            var data = event.data;
+            switch (data.action) {
                 case 'forcedElementState':
+                    emitAction(data, ['enabled', 'selector', 'state']);
+                    break;
+
                 case 'fileSaved':
                 case 'revertRevision':
                 case 'applyOriginalContent':
-                case 'togglePrettyPrint':
-                case 'setBreakpoint':
                 case 'openSourceLink':
-                case 'networkSort':
                 case 'networkRequestSelected':
-                case 'networkRequestTabSelected':
-                case 'heapSnapshotFilterChanged':
-                    emitAction(event.data);
+                    emitAction(data, ['url']);
                     break;
+
+                case 'togglePrettyPrint':
+                    emitAction(data, ['url', 'enabled']);
+                    break;
+
+                case 'setBreakpoint':
+                    emitAction(data, ['url', 'line', 'enabled']);
+                    break;
+
+                case 'networkSort':
+                    emitAction(data, ['column', 'sortOrder']);
+                    break;
+
+                case 'networkRequestTabSelected':
+                    emitAction(data, ['url', 'tab']);
+                    break;
+
+                case 'heapSnapshotFilterChanged':
+                    emitAction(data, ['label']);
+                    break;
+
                 default:
                     if (DEBUG) {
-                        console.warn(JSON.stringify(event.data.action) + ' is ignored. ', event.data);
+                        console.warn(JSON.stringify(data.action) + ' is ignored. ', data);
                     }
                     break;
             }
@@ -64,8 +81,21 @@
         });
     }
 
-    function emitAction(data) {
-        window.postMessage({command: 'emit', data: data}, '*');
+    function emitAction(data, allowedProperties) {
+        if (!allowedProperties) {
+            var object = data;
+        } else {
+            object = {action: data.action};
+            for (var i = 0; i < allowedProperties.length; i++) {
+                var key = allowedProperties[i];
+                object[key] = data[key];
+            }
+        }
+        window.postMessage({
+            command: 'emit',
+            url: WebInspector.inspectedPageURL,
+            data: object
+        }, '*');
     }
 
     /**

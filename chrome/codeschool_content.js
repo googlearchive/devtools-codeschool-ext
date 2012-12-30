@@ -3,13 +3,17 @@ window.addEventListener('message', function(event) {
     if (event.source != window)
         return;
 
-    if (!event.data || !event.data.command)
-        return;
-
-    if (event.data.command === 'codeschool.enable') {
-        chrome.extension.sendMessage({action: 'enable'});
-    } else if (event.data.command === 'codeschool.disable') {
-        chrome.extension.sendMessage({action: 'disable'});
+    var data = event.data;
+    if (data.command === 'codeschool.enable') {
+        chrome.extension.sendMessage({
+            url: data.url,
+            action: 'enable'
+        });
+    } else if (data.command === 'codeschool.disable') {
+        chrome.extension.sendMessage({
+            url: data.url,
+            action: 'disable'
+        });
     }
 }, false);
 
