@@ -1,8 +1,8 @@
+var DEBUG = true;
+
 var pagesDict = {};
 
-
 chrome.extension.onMessage.addListener(function(request, sender) {
-    console.log(request, sender);
     if (request.action === 'enable') {
         console.log('enabled!');
         pagesDict[request.url] = true;
@@ -15,12 +15,11 @@ chrome.extension.onMessage.addListener(function(request, sender) {
     } else if (request.action === 'disable') {
         console.log('disabled');
         pagesDict[request.url] = null;
-
     }
 
     if (request.command === 'emit') {
-        console.log('emit', request.data);
-        if (pagesDict[request.url]) {
+        if (pagesDict[request.url] || DEBUG) {
+            console.log('emit', request.data);
             // Send it to Code School receiver page
         }
     }

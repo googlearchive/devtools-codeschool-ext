@@ -4,6 +4,10 @@ window.addEventListener('message', function(event) {
         return;
 
     var data = event.data;
+    if (!data.command || !data.url) {
+        return;
+    }
+
     if (data.command === 'codeschool.enable') {
         chrome.extension.sendMessage({
             url: data.url,
@@ -16,4 +20,3 @@ window.addEventListener('message', function(event) {
         });
     }
 }, false);
-

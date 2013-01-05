@@ -1,6 +1,14 @@
 <title>Push</title>
 
 <script src="test.js"></script>
+<script>
+function toggle(on) {
+    window.postMessage({
+        command: on ? 'codeschool.enable' : 'codeschool.disable',
+        url: 'http://devtools-codeschool.dev/reciever.html?expando=' + Math.random().toString(36).slice(2)
+    }, '*');
+}
+</script>
 
-<button onclick="window.postMessage({command: 'codeschool.enable'}, '*');">Enable</button>
-<button onclick="window.postMessage({command: 'codeschool.disable'}, '*');">Disable</button>
+<button onclick="toggle(true)">Enable</button>
+<button onclick="toggle(false)">Disable</button>
