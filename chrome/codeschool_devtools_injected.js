@@ -123,4 +123,4 @@
 })();
 
 
-//@ sourceURL=codeschool.js
+//@ sourceURL=codeschool_devtools_injected.js

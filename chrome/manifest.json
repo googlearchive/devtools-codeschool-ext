@@ -13,7 +13,7 @@
     },
     {
       "matches": ["<all_urls>"],
-      "js": ["index.js"]
+      "js": ["codeschool_devtools.js"]
     }
   ],
 
@@ -22,5 +22,5 @@
     "persistent": false
   },
 
-  "web_accessible_resources": ["codeschool.js", "codeschool.png"]
+  "web_accessible_resources": ["codeschool_devtools_injected.js", "codeschool.png"]
 }
