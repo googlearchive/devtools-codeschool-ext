@@ -14,6 +14,7 @@ if (location.protocol === 'chrome-devtools:') (function() {
     port.onMessage.addListener(function(msg) {
         console.log('port', msg);
         if (msg.command == 'initialize') {
+
             if (isInitialized) {
                 throw new Error('already initialized');
             }
@@ -22,6 +23,7 @@ if (location.protocol === 'chrome-devtools:') (function() {
             var script = document.createElement('script');
             script.type = 'text/javascript';
             script.src = chrome.extension.getURL('codeschool_devtools_injected.js');
+            script.dataset.urlsSet = JSON.stringify(msg.urlsSet);
             (document.head || document.body || document.documentElement).appendChild(script);
         }
     });
