@@ -7,7 +7,7 @@
     function checkInspectedPage() {
         for (var i = document.scripts.length; i--;) {
             var script = document.scripts[i];
-            if (script.url && script.url.endsWith('codeschool_devtools_injected.js')) {
+            if (script.src && script.src.endsWith('codeschool_devtools_injected.js')) {
                 var urlsSet = JSON.parse(script.dataset.urlsSet);
                 if (urlsSet[WebInspector.inspectedPageURL]) {
                     setupListeners();
