@@ -8,15 +8,18 @@ window.addEventListener('message', function(event) {
         return;
     }
 
+    var port = null;
     if (data.command === 'codeschool.enable') {
-        chrome.extension.sendMessage({
+        port = chrome.extension.connect({name: 'tutorial'});
+        port.postMessage({
             url: data.url,
             action: 'enable'
         });
-    } else if (data.command === 'codeschool.disable') {
-        chrome.extension.sendMessage({
+    } else if (data.command === 'codeschool.disable' && port) {
+        port.postMessage({
             url: data.url,
             action: 'disable'
         });
+        port = null;
     }
 }, false);

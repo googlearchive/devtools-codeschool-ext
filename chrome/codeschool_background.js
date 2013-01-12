@@ -1,29 +1,36 @@
-var urlsSet = {};
+var isEnabled = false;
+var url = '';
+var devToolsPort = null;
 
-chrome.extension.onMessage.addListener(function(request, sender) {
-    console.log(request.url, request.action);
-
-    if (request.action === 'enable') {
-        console.log('enabled!');
-        urlsSet[request.url] = true;
-        chrome.extension.onConnect.addListener(function(port) {
-            port.postMessage({
-                command: 'initialize',
-                urlsSet: urlsSet
-            });
-            port.onMessage.addListener(function(msg) {
-                console.log('msg', msg);
-            });
-        });
-    } else if (request.action === 'disable') {
-        console.log('disabled');
-        urlsSet[request.url] = null;
+chrome.extension.onConnect.addListener(function(port) {
+    if (port.name === 'tutorial') {
+        port.onMessage.addListener(function(msg) {
+            if (msg.action === 'enable') {
+                isEnabled = true;
+                url = msg.url;
+                if (devToolsPort) {
+                    initialize();
+                }
+            } else if (msg.action === 'disable') {
+                isEnabled = false;
+                url = '';
+                port.disconnect();
+            }
+        })
     }
 
-    if (request.command === 'emit') {
-        if (urlsSet[request.url]) {
-            console.log('emit', request.data);
-            // Send it to Code School receiver page
-        }
+    if (port.name === 'devtools') {
+        console.info('DevTools port opened %d', port.portId_);
+        devToolsPort = port;
+        if (isEnabled)
+            initialize();
     }
 });
+
+
+function initialize() {
+    devToolsPort.postMessage({
+        command: 'initialize',
+        url: url
+    });
+}
