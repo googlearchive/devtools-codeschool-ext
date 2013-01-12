@@ -21,6 +21,7 @@ chrome.extension.onConnect.addListener(function(port) {
 
     if (port.name === 'devtools') {
         console.info('DevTools port opened %d', port.portId_);
+        // FIXME: portId_ is different for every new instance of DevTools. This might cause a memory leak.
         devToolsPort = port;
         if (isEnabled)
             initialize();
