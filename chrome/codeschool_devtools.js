@@ -9,22 +9,20 @@ if (location.protocol === 'chrome-devtools:') (function() {
         }
     }, false);
 
-    var isInitialized = false;
     var port = chrome.extension.connect({name: "devtools"});
     port.onMessage.addListener(function(msg) {
         console.log('port', msg);
         if (msg.command == 'initialize') {
-
-            if (isInitialized) {
-                throw new Error('already initialized');
+            // A dirty yet the only (AFAIK) way to get inspectedPageURL in content script
+            var inspectedPageURL = document.title.replace(/^Developer Tools - /, '');
+            var urlsSet = msg.urlsSet;
+            if (urlsSet[inspectedPageURL]) {
+                // http://stackoverflow.com/a/4854189/16185
+                var script = document.createElement('script');
+                script.type = 'text/javascript';
+                script.src = chrome.extension.getURL('codeschool_devtools_injected.js');
+                (document.head || document.body || document.documentElement).appendChild(script);
             }
-            isInitialized = true;
-            // http://stackoverflow.com/a/4854189/16185
-            var script = document.createElement('script');
-            script.type = 'text/javascript';
-            script.src = chrome.extension.getURL('codeschool_devtools_injected.js');
-            script.dataset.urlsSet = JSON.stringify(msg.urlsSet);
-            (document.head || document.body || document.documentElement).appendChild(script);
         }
     });
 

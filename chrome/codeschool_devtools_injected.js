@@ -2,22 +2,7 @@
 
     var DEBUG = true;
 
-    checkInspectedPage();
-
-    function checkInspectedPage() {
-        for (var i = document.scripts.length; i--;) {
-            var script = document.scripts[i];
-            if (script.src && script.src.endsWith('codeschool_devtools_injected.js')) {
-                var urlsSet = JSON.parse(script.dataset.urlsSet);
-                if (urlsSet[WebInspector.inspectedPageURL]) {
-                    setupListeners();
-                } else {
-                    console.warn('None of DevTools instances inspect Code School page');
-                }
-                break;
-            }
-        }
-    }
+    setupListeners();
 
     function setupListeners() {
         WebInspector.notifications.addEventListener(WebInspector.UserMetrics.UserAction, function(event) {
