@@ -8,7 +8,7 @@
 
 ### Setup devtools-codeschool.dev host
 
-test/index.html should be accesable via devtools-codeschool.dev/
+test/index.html should be accesable via devtools-codeschool.dev/  
 test/target.html should be accessable via devtools-codeschool.dev/target.html
 
 I use [Pow](http://pow.cx/) to setup devtools-codeschool.dev host
