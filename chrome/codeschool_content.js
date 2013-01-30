@@ -9,14 +9,14 @@ window.addEventListener('message', function(event) {
     }
 
     var port = null;
-    if (data.command === 'codeschool.enable') {
+    if (data.command === 'devtools.enableUserEvents') {
         port = chrome.extension.connect({name: 'tutorial'});
         port.postMessage({
             url: data.url,
             action: 'enable'
         });
         port.onMessage.addListener(onMessageFromBackgroundPage);
-    } else if (data.command === 'codeschool.disable' && port) {
+    } else if (data.command === 'devtools.disableUserEvents' && port) {
         port.postMessage({
             url: data.url,
             action: 'disable'
@@ -30,6 +30,6 @@ window.addEventListener('message', function(event) {
 function onMessageFromBackgroundPage(msg) {
     window.postMessage({
         msg: msg,
-        action: 'devtools.event'
+        action: 'devtools.userEvent'
     }, '*')
 }

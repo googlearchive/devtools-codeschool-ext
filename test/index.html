@@ -10,20 +10,18 @@
 <script>
 window.addEventListener('message', function(event) {
     var data = event.data;
-    if (data.action === 'devtools.event') {
+    if (data.action === 'devtools.userEvent') {
         console.info(data.action, data.msg);
     }
 }, false);
 
-var uniqId = Math.random().toString(36).slice(2);
+
 function toggle(on) {
     window.postMessage({
-        command: on ? 'codeschool.enable' : 'codeschool.disable',
-        url: location.href + 'target.html?id=' + uniqId
+        command: on ? 'devtools.enableUserEvents' : 'devtools.disableUserEvents',
+        url: location.href + 'target.html'
     }, '*');
 }
-target_link.href += "?id=" + uniqId;
-target_link.textContent = target_link.href;
 
 document.documentElement.addEventListener('click', function(event) {
     var target = event.target;
