@@ -8,6 +8,13 @@
 
 <script src="test.js"></script>
 <script>
+window.addEventListener('message', function(event) {
+    var data = event.data;
+    if (data.action === 'devtools.event') {
+        console.info(data.action, data.msg);
+    }
+}, false);
+
 var uniqId = Math.random().toString(36).slice(2);
 function toggle(on) {
     window.postMessage({

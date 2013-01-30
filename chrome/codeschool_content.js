@@ -15,11 +15,21 @@ window.addEventListener('message', function(event) {
             url: data.url,
             action: 'enable'
         });
+        port.onMessage.addListener(onMessageFromBackgroundPage);
     } else if (data.command === 'codeschool.disable' && port) {
         port.postMessage({
             url: data.url,
             action: 'disable'
         });
+        port.disconnect();
         port = null;
     }
 }, false);
+
+
+function onMessageFromBackgroundPage(msg) {
+    window.postMessage({
+        msg: msg,
+        action: 'devtools.event'
+    }, '*')
+}
