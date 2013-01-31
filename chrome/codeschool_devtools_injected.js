@@ -15,9 +15,12 @@
                 case 'fileSaved':
                 case 'revertRevision':
                 case 'applyOriginalContent':
-                case 'openSourceLink':
                 case 'networkRequestSelected':
                     emitAction(data, ['url']);
+                    break;
+
+                case 'openSourceLink':
+                    emitAction(data, ['url', 'lineNumber']);
                     break;
 
                 case 'togglePrettyPrint':
