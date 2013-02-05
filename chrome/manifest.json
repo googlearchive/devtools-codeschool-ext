@@ -7,7 +7,7 @@
 
   "content_scripts": [
     {
-      "matches": ["http://devtools-codeschool.dev/"],
+      "matches": ["http://devtools-codeschool.dev/", "http://discover-devtools.codeschool.com/*"],
       "js": ["codeschool_content.js"],
       "run_at": "document_start"
     },
