@@ -4,9 +4,18 @@
 2. Press "Load unpacked extension..." button
 3. Choose "devtools-codeschool-ext/chrome" directory
 
-## Usage
+## Developing
 
-1. Open [test/index.html](https://github.com/GoogleChrome/devtools-codeschool-ext/blob/master/test/index.html)
-2. Open DevTools
+### Setup devtools-codeschool.dev host
 
-Try "Force Element State". It should log the action in the console of DevTools.
+test/index.html should be accesable via devtools-codeschool.dev/  
+test/target.html should be accessable via devtools-codeschool.dev/target.html
+
+I use [Pow](http://pow.cx/) to setup devtools-codeschool.dev host
+
+### Usage
+
+1. Open devtools-codeschool.dev
+2. Press "Enable" button
+3. Click target.html link
+4. Try "Force Element State". It should log the action to the console of the background page of the extension.

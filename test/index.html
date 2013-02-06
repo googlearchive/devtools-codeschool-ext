@@ -1,1 +1,39 @@
+<title>Push</title>
+
+<p>
+    <a href="target.html" id="target_link" target="_blank">target.html</a>
+    <button onclick="toggle(true)" id="enable_button">Enable</button>
+    <button onclick="toggle(false)" id="disable_button" disabled>Disable</button>
+</p>
+
 <script src="test.js"></script>
+<script>
+window.addEventListener('message', function(event) {
+    var data = event.data;
+    if (data.action === 'devtools.userEvent') {
+        console.info(data.action, data.msg);
+    }
+}, false);
+
+
+function toggle(on) {
+    window.postMessage({
+        command: on ? 'devtools.enableUserEvents' : 'devtools.disableUserEvents',
+        url: location.href + 'target.html'
+    }, '*');
+}
+
+document.documentElement.addEventListener('click', function(event) {
+    var target = event.target;
+    if (target.disabled) {
+        return;
+    }
+    if (target.id === 'enable_button') {
+        enable_button.disabled = true;
+        disable_button.disabled = false;
+    } else if (target.id === 'disable_button') {
+        enable_button.disabled = false;
+        disable_button.disabled = true;
+    }
+}, false);
+</script>

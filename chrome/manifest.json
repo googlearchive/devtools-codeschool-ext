@@ -1,15 +1,24 @@
 {
   "name": "Discover DevTools Companion",
-
   "version": "0.2.1",
   "manifest_version": 2,
 
   "content_scripts": [
     {
+      "matches": ["http://devtools-codeschool.dev/", "http://discover-devtools.codeschool.com/*"],
+      "js": ["codeschool_content.js"],
+      "run_at": "document_start"
+    },
+    {
       "matches": ["<all_urls>"],
-      "js": ["index.js"]
+      "js": ["codeschool_devtools.js"]
     }
   ],
 
-  "web_accessible_resources": ["codeschool.js", "codeschool.png"]
+  "background": {
+    "scripts": ["codeschool_background.js"],
+    "persistent": false
+  },
+
+  "web_accessible_resources": ["codeschool_devtools_injected.js", "codeschool.png"]
 }
