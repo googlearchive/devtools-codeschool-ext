@@ -56,6 +56,22 @@
                 action: 'profileAdded',
                 type: event.data.type
             });
+
+            if (event.data.type === 'HEAP') {
+                var profiles = event.target._profiles;
+                if (profiles.length === 0) {
+                    return;
+                }
+                var lastProfile = profiles[profiles.length - 1];
+                var view = lastProfile.view();
+                var viewSelectElement = view.viewSelectElement;
+                viewSelectElement.addEventListener('change', function() {
+                    emitAction({
+                        action: 'heapSnapshotViewChange',
+                        index: event.target.selectedIndex
+                    })
+                });
+            }
         });
         WebInspector.timelineManager.addEventListener(WebInspector.TimelineManager.EventTypes.TimelineStarted, function() {
             emitAction({
