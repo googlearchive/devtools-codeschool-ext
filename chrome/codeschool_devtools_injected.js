@@ -65,10 +65,12 @@
                 var lastProfile = profiles[profiles.length - 1];
                 var view = lastProfile.view();
                 var viewSelectElement = view.viewSelectElement;
-                viewSelectElement.addEventListener('change', function() {
+                viewSelectElement.addEventListener('change', function(event) {
+                    var target = event.target;
+                    var label = target[target.selectedIndex].label;
                     emitAction({
                         action: 'heapSnapshotViewChange',
-                        index: event.target.selectedIndex
+                        label: label
                     })
                 });
             }
