@@ -6,15 +6,14 @@ if (location.protocol === 'chrome-devtools:') (function() {
     port.onMessage.addListener(function(msg) {
         console.log('port', msg);
         if (msg.command == 'initialize') {
-            // A dirty yet the only (AFAIK) way to get inspectedPageURL in content script
-            var inspectedPageURL = document.title.replace(/^Developer Tools - /, '');
-            if (msg.url === inspectedPageURL) {
-                // http://stackoverflow.com/a/4854189/16185
-                var script = document.createElement('script');
-                script.type = 'text/javascript';
-                script.src = chrome.extension.getURL('codeschool_devtools_injected.js');
-                (document.head || document.body || document.documentElement).appendChild(script);
+            if (!msg.url) {
+                throw new Error('url is missing');
             }
+            var script = document.createElement('script');
+            script.type = 'text/javascript';
+            script.src = chrome.extension.getURL('codeschool_devtools_injected.js');
+            script.dataset.url = msg.url;
+            (document.head || document.body || document.documentElement).appendChild(script);
         }
     });
 
