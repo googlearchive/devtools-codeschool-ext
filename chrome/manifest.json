@@ -22,5 +22,7 @@
     "persistent": false
   },
 
+  "permissions": ["http://devtools-codeschool.dev/", "http://discover-devtools.codeschool.com/*"],
+
   "web_accessible_resources": ["codeschool_devtools_injected.js", "codeschool.png"]
 }
