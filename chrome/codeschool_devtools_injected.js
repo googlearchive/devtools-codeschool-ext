@@ -67,11 +67,30 @@
             }
         });
 
-        WebInspector.panel('profiles').addEventListener('profile added', function(event) {
-            emitAction({
-                action: 'profileAdded',
-                type: event.data.type
-            });
+        var profiles = WebInspector.panel('profiles');
+        var startProfileButtonClicked = false;
+
+        ['ProfileLauncherView', 'MultiProfileLauncherView'].forEach(function(className) {
+            var classObject = WebInspector[className];
+            if (!classObject) {
+                console.warn('WebInspector.%s is missing', className);
+                return;
+            }
+            var originalMethod = classObject.prototype.profileStarted;
+            classObject.prototype.profileStarted = function() {
+                originalMethod.apply(this, arguments);
+                startProfileButtonClicked = true;
+            };
+        });
+
+        profiles.addEventListener('profile added', function(event) {
+            if (startProfileButtonClicked) {
+                emitAction({
+                    action: 'profileAdded',
+                    type: event.data.type
+                });
+                startProfileButtonClicked = false;
+            }
 
             if (event.data.type === 'HEAP') {
                 var profiles = event.target._profiles;
