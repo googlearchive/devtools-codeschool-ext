@@ -1,6 +1,6 @@
 {
   "name": "Discover DevTools Companion",
-  "version": "0.2.4",
+  "version": "0.2.5",
   "manifest_version": 2,
 
   "content_scripts": [
@@ -20,5 +20,7 @@
     "persistent": false
   },
 
-  "web_accessible_resources": ["codeschool_devtools_injected.js", "codeschool.png"]
+  "permissions": ["http://devtools-codeschool.dev/", "http://discover-devtools.codeschool.com/*"],
+
+  "web_accessible_resources": ["codeschool_content.js", "codeschool_devtools_injected.js", "codeschool.png"]
 }
