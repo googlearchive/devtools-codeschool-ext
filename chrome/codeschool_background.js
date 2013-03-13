@@ -7,6 +7,7 @@ chrome.extension.onConnect.addListener(function(port) {
     if (port.name === 'tutorial') {
         tutorialPort = port;
         port.onMessage.addListener(function(msg) {
+            console.info('from tutorial: %s', msg.action);
             if (msg.action === 'enable') {
                 isEnabled = true;
                 url = msg.url;
@@ -30,6 +31,7 @@ chrome.extension.onConnect.addListener(function(port) {
         }
 
         port.onMessage.addListener(function(msg) {
+            console.info('from DevTools:', msg.data);
             if (!tutorialPort) {
                 throw new Error('tutorialPort hasn\'t been open');
             }
@@ -48,3 +50,26 @@ function initialize() {
         url: url
     });
 }
+
+
+(function onInstall() {
+    var details = chrome.app.getDetails();
+    var content_scripts = details.content_scripts;
+    content_scripts.forEach(function(script) {
+        script.matches.forEach(function(match) {
+            if (match === '<all_urls>') {
+                return;
+            }
+            chrome.tabs.query({url: match}, function(tabs) {
+                console.log('tabs', tabs);
+                tabs.forEach(function(tab) {
+                    script.js.forEach(function(jsFile) {
+                        chrome.tabs.executeScript(tab.id, {file: jsFile}, function() {
+                            console.log('executed', match, jsFile);
+                        });
+                    });
+                });
+            });
+        });
+    });
+})();
