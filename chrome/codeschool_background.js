@@ -7,6 +7,7 @@ chrome.extension.onConnect.addListener(function(port) {
     if (port.name === 'tutorial') {
         tutorialPort = port;
         port.onMessage.addListener(function(msg) {
+            console.info('from tutorial: %s', msg.action);
             if (msg.action === 'enable') {
                 isEnabled = true;
                 url = msg.url;
@@ -30,6 +31,7 @@ chrome.extension.onConnect.addListener(function(port) {
         }
 
         port.onMessage.addListener(function(msg) {
+            console.info('from DevTools:', msg.data);
             if (!tutorialPort) {
                 throw new Error('tutorialPort hasn\'t been open');
             }

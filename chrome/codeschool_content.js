@@ -1,10 +1,11 @@
+var port = null;
+
 window.addEventListener('message', function(event) {
     var data = event.data;
     if (!data.command || !data.url) {
         return;
     }
 
-    var port = null;
     if (data.command === 'devtools.enableUserEvents') {
         port = chrome.extension.connect({name: 'tutorial'});
         port.postMessage({
