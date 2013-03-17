@@ -76,40 +76,61 @@
                 console.warn('WebInspector.%s is missing', className);
                 return;
             }
-            var originalMethod = classObject.prototype.profileStarted;
+            var profileStarted = classObject.prototype.profileStarted;
             classObject.prototype.profileStarted = function() {
-                originalMethod.apply(this, arguments);
+                console.info('click Start Profile');
+                profileStarted.apply(this, arguments);
                 startProfileButtonClicked = true;
             };
+
+            // profileFinished fires on "clear all profiles", don't use it
         });
 
-        profiles.addEventListener('profile added', function(event) {
-            if (startProfileButtonClicked) {
-                emitAction({
-                    action: 'profileAdded',
-                    type: event.data.type
-                });
-                startProfileButtonClicked = false;
-            }
+        setupProfileListener();
 
-            if (event.data.type === 'HEAP') {
-                var profiles = event.target._profiles;
-                if (profiles.length === 0) {
-                    return;
-                }
-                var lastProfile = profiles[profiles.length - 1];
-                var view = lastProfile.view();
-                var viewSelectElement = view.viewSelectElement;
-                viewSelectElement.addEventListener('change', function(event) {
-                    var target = event.target;
-                    var label = target[target.selectedIndex].label;
+        var profiles_reset = profiles._reset;
+        if (profiles_reset) {
+            profiles._reset = function() {
+                console.info('reset');
+                profiles_reset.apply(this, arguments);
+                setupProfileListener();
+            };
+        } else {
+            console.warn('profiles._reset is missing');
+        }
+
+        function setupProfileListener() {
+            profiles.addEventListener('profile added', function(event) {
+                console.info('Profile added');
+                if (startProfileButtonClicked) {
                     emitAction({
-                        action: 'heapSnapshotViewChange',
-                        label: label
-                    })
-                });
-            }
-        });
+                        action: 'profileAdded',
+                        type: event.data.type
+                    });
+                    startProfileButtonClicked = false;
+                }
+
+                if (event.data.type === 'HEAP') {
+                    var profiles = event.target._profiles;
+                    if (profiles.length === 0) {
+                        return;
+                    }
+                    var lastProfile = profiles[profiles.length - 1];
+                    var view = lastProfile.view();
+                    var viewSelectElement = view.viewSelectElement;
+                    viewSelectElement.addEventListener('change', function(event) {
+                        var target = event.target;
+                        var label = target[target.selectedIndex].label;
+                        emitAction({
+                            action: 'heapSnapshotViewChange',
+                            label: label
+                        })
+                    });
+                }
+            });
+        }
+
+
         WebInspector.timelineManager.addEventListener(WebInspector.TimelineManager.EventTypes.TimelineStarted, function() {
             emitAction({
                 action: 'timelineStarted'
