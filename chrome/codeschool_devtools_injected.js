@@ -86,6 +86,25 @@
             // profileFinished fires on "clear all profiles", don't use it
         });
 
+        var HeapSnapshotView_onSelectedViewChanged = WebInspector.HeapSnapshotView.prototype._onSelectedViewChanged;
+        if (HeapSnapshotView_onSelectedViewChanged) {
+            WebInspector.HeapSnapshotView.prototype._onSelectedViewChanged = function(event) {
+                HeapSnapshotView_onSelectedViewChanged.apply(this, arguments);
+
+                if (this._profileTypeId === 'HEAP') {
+                    var target = event.target;
+                    var label = target[target.selectedIndex].label;
+                    emitAction({
+                        action: 'heapSnapshotViewChange',
+                        label: label
+                    });
+                }
+            };
+        } else {
+            console.warn('WebInspector.HeapSnapshotView.prototype._onSelectedViewChanged is missing');
+        }
+
+
         setupProfileListener();
 
         var profiles_reset = profiles._reset;
@@ -108,24 +127,6 @@
                         type: event.data.type
                     });
                     startProfileButtonClicked = false;
-                }
-
-                if (event.data.type === 'HEAP') {
-                    var profiles = event.target._profiles;
-                    if (profiles.length === 0) {
-                        return;
-                    }
-                    var lastProfile = profiles[profiles.length - 1];
-                    var view = lastProfile.view();
-                    var viewSelectElement = view.viewSelectElement;
-                    viewSelectElement.addEventListener('change', function(event) {
-                        var target = event.target;
-                        var label = target[target.selectedIndex].label;
-                        emitAction({
-                            action: 'heapSnapshotViewChange',
-                            label: label
-                        })
-                    });
                 }
             });
         }
