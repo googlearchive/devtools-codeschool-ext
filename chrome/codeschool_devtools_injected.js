@@ -68,23 +68,26 @@
         });
 
         var profiles = WebInspector.panel('profiles');
-        var startProfileButtonClicked = false;
 
-        ['ProfileLauncherView', 'MultiProfileLauncherView'].forEach(function(className) {
-            var classObject = WebInspector[className];
-            if (!classObject) {
-                console.warn('WebInspector.%s is missing', className);
-                return;
+        var profilesPanel_toggleRecordButton = WebInspector.ProfilesPanel.prototype.toggleRecordButton;
+        if (profilesPanel_toggleRecordButton) {
+            WebInspector.ProfilesPanel.prototype.toggleRecordButton = function() {
+                profilesPanel_toggleRecordButton.apply(this, arguments);
+
+                if (this._selectedProfileType) {
+                    if (this._selectedProfileType.id === 'HEAP' || this._selectedProfileType._recording === false) {
+                        emitAction({
+                            action: 'profileAdded',
+                            type: this._selectedProfileType.id
+                        });
+                    }
+                } else {
+                    console.warn('_selectedProfileType is missing');
+                }
             }
-            var profileStarted = classObject.prototype.profileStarted;
-            classObject.prototype.profileStarted = function() {
-                console.info('click Start Profile');
-                profileStarted.apply(this, arguments);
-                startProfileButtonClicked = true;
-            };
-
-            // profileFinished fires on "clear all profiles", don't use it
-        });
+        } else {
+            console.warn('WebInspector.ProfilesPanel.prototype.toggleRecordButton is missing');
+        }
 
         var HeapSnapshotView_onSelectedViewChanged = WebInspector.HeapSnapshotView.prototype._onSelectedViewChanged;
         if (HeapSnapshotView_onSelectedViewChanged) {
@@ -102,33 +105,6 @@
             };
         } else {
             console.warn('WebInspector.HeapSnapshotView.prototype._onSelectedViewChanged is missing');
-        }
-
-
-        setupProfileListener();
-
-        var profiles_reset = profiles._reset;
-        if (profiles_reset) {
-            profiles._reset = function() {
-                console.info('reset');
-                profiles_reset.apply(this, arguments);
-                setupProfileListener();
-            };
-        } else {
-            console.warn('profiles._reset is missing');
-        }
-
-        function setupProfileListener() {
-            profiles.addEventListener('profile added', function(event) {
-                console.info('Profile added');
-                if (startProfileButtonClicked) {
-                    emitAction({
-                        action: 'profileAdded',
-                        type: event.data.type
-                    });
-                    startProfileButtonClicked = false;
-                }
-            });
         }
 
 
