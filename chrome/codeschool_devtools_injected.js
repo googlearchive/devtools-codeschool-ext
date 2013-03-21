@@ -68,43 +68,66 @@
         });
 
         var profiles = WebInspector.panel('profiles');
+        var startProfileButtonClicked = false;
 
-        var profilesPanel_toggleRecordButton = WebInspector.ProfilesPanel.prototype.toggleRecordButton;
-        if (profilesPanel_toggleRecordButton) {
-            WebInspector.ProfilesPanel.prototype.toggleRecordButton = function() {
-                profilesPanel_toggleRecordButton.apply(this, arguments);
-
-                if (this._selectedProfileType) {
-                    if (this._selectedProfileType.id === 'HEAP' || this._selectedProfileType._recording === false) {
-                        emitAction({
-                            action: 'profileAdded',
-                            type: this._selectedProfileType.id
-                        });
-                    }
-                } else {
-                    console.warn('_selectedProfileType is missing');
-                }
+        ['ProfileLauncherView', 'MultiProfileLauncherView'].forEach(function(className) {
+            var classObject = WebInspector[className];
+            if (!classObject) {
+                console.warn('WebInspector.%s is missing', className);
+                return;
             }
-        } else {
-            console.warn('WebInspector.ProfilesPanel.prototype.toggleRecordButton is missing');
-        }
+            var profileStarted = classObject.prototype.profileStarted;
+            classObject.prototype.profileStarted = function() {
+                console.info('click Start Profile');
+                profileStarted.apply(this, arguments);
+                startProfileButtonClicked = true;
+            };
 
-        var HeapSnapshotView_onSelectedViewChanged = WebInspector.HeapSnapshotView.prototype._onSelectedViewChanged;
-        if (HeapSnapshotView_onSelectedViewChanged) {
-            WebInspector.HeapSnapshotView.prototype._onSelectedViewChanged = function(event) {
-                HeapSnapshotView_onSelectedViewChanged.apply(this, arguments);
+            // profileFinished fires on "clear all profiles", don't use it
+        });
 
-                if (this._profileTypeId === 'HEAP') {
-                    var target = event.target;
-                    var label = target[target.selectedIndex].label;
-                    emitAction({
-                        action: 'heapSnapshotViewChange',
-                        label: label
-                    });
-                }
+        setupProfileListener();
+
+        var profiles_reset = profiles._reset;
+        if (profiles_reset) {
+            profiles._reset = function() {
+                console.info('reset');
+                profiles_reset.apply(this, arguments);
+                setupProfileListener();
             };
         } else {
-            console.warn('WebInspector.HeapSnapshotView.prototype._onSelectedViewChanged is missing');
+            console.warn('profiles._reset is missing');
+        }
+
+        function setupProfileListener() {
+            profiles.addEventListener('profile added', function(event) {
+                console.info('Profile added');
+                if (startProfileButtonClicked) {
+                    emitAction({
+                        action: 'profileAdded',
+                        type: event.data.type
+                    });
+                    startProfileButtonClicked = false;
+                }
+
+                if (event.data.type === 'HEAP') {
+                    var profiles = event.target._profiles;
+                    if (profiles.length === 0) {
+                        return;
+                    }
+                    var lastProfile = profiles[profiles.length - 1];
+                    var view = lastProfile.view();
+                    var viewSelectElement = view.viewSelectElement;
+                    viewSelectElement.addEventListener('change', function(event) {
+                        var target = event.target;
+                        var label = target[target.selectedIndex].label;
+                        emitAction({
+                            action: 'heapSnapshotViewChange',
+                            label: label
+                        })
+                    });
+                }
+            });
         }
 
 
