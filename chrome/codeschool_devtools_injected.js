@@ -94,14 +94,12 @@
             WebInspector.HeapSnapshotView.prototype._onSelectedViewChanged = function(event) {
                 HeapSnapshotView_onSelectedViewChanged.apply(this, arguments);
 
-                if (this._profileTypeId === 'HEAP') {
                     var target = event.target;
                     var label = target[target.selectedIndex].label;
                     emitAction({
                         action: 'heapSnapshotViewChange',
                         label: label
                     });
-                }
             };
         } else {
             console.warn('WebInspector.HeapSnapshotView.prototype._onSelectedViewChanged is missing');
