@@ -67,27 +67,55 @@
             }
         });
 
+
+        // Force to load ProfilesPanel.js
         var profiles = WebInspector.panel('profiles');
 
-        var profilesPanel_toggleRecordButton = WebInspector.ProfilesPanel.prototype.toggleRecordButton;
-        if (profilesPanel_toggleRecordButton) {
-            WebInspector.ProfilesPanel.prototype.toggleRecordButton = function() {
-                profilesPanel_toggleRecordButton.apply(this, arguments);
+        var cpuProfileType_buttonClicked = WebInspector.CPUProfileType.prototype.buttonClicked;
+        if (cpuProfileType_buttonClicked) {
+            WebInspector.CPUProfileType.prototype.buttonClicked = function() {
+                if (this._recording) {
+                    emitAction({
+                        action: 'profileAdded',
+                        type: 'CPU'
+                    });
+                }
+                return cpuProfileType_buttonClicked.apply(this, arguments);
+            }
+        } else {
+            console.warn('WebInspector.CPUProfileType.prototype.buttonClicked is missing');
+        }
 
-                if (this._selectedProfileType) {
-                    if (this._selectedProfileType.id === 'HEAP' || this._selectedProfileType._recording === false) {
-                        emitAction({
-                            action: 'profileAdded',
-                            type: this._selectedProfileType.id
-                        });
-                    }
-                } else {
-                    console.warn('_selectedProfileType is missing');
+        var heapSnapshotProfileType_buttonClicked = WebInspector.HeapSnapshotProfileType.prototype.buttonClicked;
+        if (heapSnapshotProfileType_buttonClicked) {
+            WebInspector.HeapSnapshotProfileType.prototype.buttonClicked = function(profilesPanel) {
+                emitAction({
+                    action: 'profileAdded',
+                    type: 'HEAP'
+                });
+                return heapSnapshotProfileType_buttonClicked.apply(this, arguments);
+            }
+        } else {
+            console.warn('WebInspector.HeapSnapshotProfileType.prototype.buttonClicked is missing');
+        }
+
+        // Works in dev and canary, but not in stable (25.0.1364.172)
+        /*
+        var ProfilesPanel_setRecordingProfile = WebInspector.ProfilesPanel.prototype.setRecordingProfile;
+        if (ProfilesPanel_setRecordingProfile) {
+            WebInspector.ProfilesPanel.prototype.setRecordingProfile = function(profileType, isProfiling) {
+                ProfilesPanel_setRecordingProfile.apply(this, arguments);
+                if (profileType === 'HEAP' || isProfiling === false) {
+                    emitAction({
+                        action: 'profileAdded',
+                        type: profileType
+                    });
                 }
             }
         } else {
-            console.warn('WebInspector.ProfilesPanel.prototype.toggleRecordButton is missing');
+            console.warn('WebInspector.ProfilesPanel.prototype.setRecordingProfile is missing');
         }
+        */
 
         var HeapSnapshotView_onSelectedViewChanged = WebInspector.HeapSnapshotView.prototype._onSelectedViewChanged;
         if (HeapSnapshotView_onSelectedViewChanged) {
