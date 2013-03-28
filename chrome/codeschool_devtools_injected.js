@@ -67,67 +67,70 @@
             }
         });
 
+
+        // Force to load ProfilesPanel.js
         var profiles = WebInspector.panel('profiles');
-        var startProfileButtonClicked = false;
 
-        ['ProfileLauncherView', 'MultiProfileLauncherView'].forEach(function(className) {
-            var classObject = WebInspector[className];
-            if (!classObject) {
-                console.warn('WebInspector.%s is missing', className);
-                return;
-            }
-            var profileStarted = classObject.prototype.profileStarted;
-            classObject.prototype.profileStarted = function() {
-                console.info('click Start Profile');
-                profileStarted.apply(this, arguments);
-                startProfileButtonClicked = true;
-            };
-
-            // profileFinished fires on "clear all profiles", don't use it
-        });
-
-        setupProfileListener();
-
-        var profiles_reset = profiles._reset;
-        if (profiles_reset) {
-            profiles._reset = function() {
-                console.info('reset');
-                profiles_reset.apply(this, arguments);
-                setupProfileListener();
-            };
-        } else {
-            console.warn('profiles._reset is missing');
-        }
-
-        function setupProfileListener() {
-            profiles.addEventListener('profile added', function(event) {
-                console.info('Profile added');
-                if (startProfileButtonClicked) {
+        var cpuProfileType_buttonClicked = WebInspector.CPUProfileType.prototype.buttonClicked;
+        if (cpuProfileType_buttonClicked) {
+            WebInspector.CPUProfileType.prototype.buttonClicked = function() {
+                if (this._recording) {
                     emitAction({
                         action: 'profileAdded',
-                        type: event.data.type
+                        type: 'CPU'
                     });
-                    startProfileButtonClicked = false;
                 }
+                return cpuProfileType_buttonClicked.apply(this, arguments);
+            }
+        } else {
+            console.warn('WebInspector.CPUProfileType.prototype.buttonClicked is missing');
+        }
 
-                if (event.data.type === 'HEAP') {
-                    var profiles = event.target._profiles;
-                    if (profiles.length === 0) {
-                        return;
-                    }
-                    var lastProfile = profiles[profiles.length - 1];
-                    var view = lastProfile.view();
-                    var viewSelectElement = view.viewSelectElement;
-                    viewSelectElement.addEventListener('change', function(event) {
-                        var target = event.target;
-                        var label = target[target.selectedIndex].label;
-                        emitAction({
-                            action: 'heapSnapshotViewChange',
-                            label: label
-                        })
+        var heapSnapshotProfileType_buttonClicked = WebInspector.HeapSnapshotProfileType.prototype.buttonClicked;
+        if (heapSnapshotProfileType_buttonClicked) {
+            WebInspector.HeapSnapshotProfileType.prototype.buttonClicked = function(profilesPanel) {
+                emitAction({
+                    action: 'profileAdded',
+                    type: 'HEAP'
+                });
+                return heapSnapshotProfileType_buttonClicked.apply(this, arguments);
+            }
+        } else {
+            console.warn('WebInspector.HeapSnapshotProfileType.prototype.buttonClicked is missing');
+        }
+
+        // Works in dev and canary, but not in stable (25.0.1364.172)
+        /*
+        var ProfilesPanel_setRecordingProfile = WebInspector.ProfilesPanel.prototype.setRecordingProfile;
+        if (ProfilesPanel_setRecordingProfile) {
+            WebInspector.ProfilesPanel.prototype.setRecordingProfile = function(profileType, isProfiling) {
+                ProfilesPanel_setRecordingProfile.apply(this, arguments);
+                if (profileType === 'HEAP' || isProfiling === false) {
+                    emitAction({
+                        action: 'profileAdded',
+                        type: profileType
                     });
                 }
-            });
+            }
+        } else {
+            console.warn('WebInspector.ProfilesPanel.prototype.setRecordingProfile is missing');
+        }
+        */
+
+        var HeapSnapshotView_onSelectedViewChanged = WebInspector.HeapSnapshotView.prototype._onSelectedViewChanged;
+        if (HeapSnapshotView_onSelectedViewChanged) {
+            WebInspector.HeapSnapshotView.prototype._onSelectedViewChanged = function(event) {
+                HeapSnapshotView_onSelectedViewChanged.apply(this, arguments);
+
+                    var target = event.target;
+                    var label = target[target.selectedIndex].label;
+                    emitAction({
+                        action: 'heapSnapshotViewChange',
+                        label: label
+                    });
+            };
+        } else {
+            console.warn('WebInspector.HeapSnapshotView.prototype._onSelectedViewChanged is missing');
         }
 
 
