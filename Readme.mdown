@@ -1,3 +1,5 @@
+(You probably want the Publish branch)
+
 ## Installing
 
 1. Open chrome://extensions/
